@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Business Case: Automated Job-Matching Agent & Application Proxy</title>
+<style>
+:root{--bg:#f7f8fa;--surface:#fff;--ink:#16202e;--muted:#5a6678;--line:#d9dee6;--accent:#1f4fd8;--tint:#e8eefc;--warn:#fff4e0;--warnline:#e3b15c;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f141c;--surface:#171e29;--ink:#e6ebf3;--muted:#9aa6b8;--line:#2a3443;--accent:#7ea3ff;--tint:#1d2a47;--warn:#2d2515;--warnline:#8a6a2a}}
+:root[data-theme="dark"]{--bg:#0f141c;--surface:#171e29;--ink:#e6ebf3;--muted:#9aa6b8;--line:#2a3443;--accent:#7ea3ff;--tint:#1d2a47;--warn:#2d2515;--warnline:#8a6a2a}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "Source Serif 4",Georgia,"Times New Roman",serif}
+main{max-width:760px;margin:0 auto;padding:40px 20px 80px}
+header{border-bottom:2px solid var(--ink);padding-bottom:20px;margin-bottom:28px}
+h1{font:700 2rem/1.2 "Inter",system-ui,-apple-system,"Segoe UI",sans-serif;margin:0 0 8px;letter-spacing:-.01em}
+h2{font:650 1.25rem/1.3 "Inter",system-ui,-apple-system,"Segoe UI",sans-serif;margin:40px 0 10px;color:var(--accent)}
+h3{font:600 1rem/1.4 "Inter",system-ui,sans-serif;margin:20px 0 4px}
+.meta{color:var(--muted);font:.9rem "Inter",system-ui,sans-serif;margin:0}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.3em}
+li{margin:4px 0}
+.callout{background:var(--tint);border-left:4px solid var(--accent);padding:14px 18px;border-radius:4px;margin:16px 0}
+.callout.warn{background:var(--warn);border-left-color:var(--warnline)}
+.callout p{margin:0}
+.scroll{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;width:100%;min-width:520px;font:.92rem/1.5 "Inter",system-ui,sans-serif;background:var(--surface)}
+th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+th{background:var(--tint)}
+.flow{display:flex;flex-direction:column;gap:0;margin:16px 0;font:.92rem/1.45 "Inter",system-ui,sans-serif}
+.flow div{background:var(--surface);border:1px solid var(--line);padding:10px 14px}
+.flow div+div{border-top:0}
+.flow b{color:var(--accent)}
+.flow .gate{background:var(--tint)}
+footer{margin-top:48px;border-top:1px solid var(--line);padding-top:12px;color:var(--muted);font:.85rem "Inter",system-ui,sans-serif}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>Business Case: Automated Job-Matching Agent & Application Proxy</h1>
+<p class="meta">Prepared for: Candidate &middot; October 2026 &middot; Status: Proposal with End-to-End User Onboarding &amp; Dynamic Skill Profiling</p>
+</header>
+
+<h2>1. Executive summary</h2>
+<p>This business case defines an autonomous, mobile-first AI agent and application proxy that automates the end-to-end job hunting workflow across target job portals. The candidate logs into the mobile-friendly web application, configures credentials for their chosen job portal, uploads their resume, and reviews a dynamically extracted skill matrix with customizable <b>years of experience</b> and <b>last used year</b> for each technology.</p>
+<p>Once configured with predefined standard screening answers (compensation, notice period, location), the agent autonomously scans chosen portals daily at 09:00 AM, calculates a weighted technical match (&ge; 70%), answers questions using a 3-tier cascade (pre-configured values, LLM resume reasoning, and mobile app approval alerts), and submits applications within human-like pacing guardrails.</p>
+<div class="callout"><p><b>Recommendation:</b> Proceed with implementation. The addition of mobile credential provisioning, dynamic resume skill extraction with recency weighting, and mobile question escalation transforms the tool into a production-grade personal career agent.</p></div>
+
+<h2>2. Problem statement</h2>
+<ul>
+<li>Job seekers spend 30 to 60 minutes daily manually logging into multiple portals, filtering listings, and reading descriptions.</li>
+<li>Listing applications demand repetitive entry of identical screening details (compensation, notice period, location).</li>
+<li>Recruiter questionnaires that introduce novel or unexpected technical questions break traditional bots, resulting in skipped applications or account errors.</li>
+<li>Resumes lack granular recency information unless explicitly adjusted (e.g. knowing whether a skill was used in 2026 vs. 2018).</li>
+<li>Early applicants receive significantly higher recruiter visibility; manual searching often discovers postings 24 to 48 hours too late.</li>
+</ul>
+
+<h2>3. User Workflow & Objectives</h2>
+<table>
+<tr><th>Workflow Stage</th><th>User &amp; Agent Actions</th><th>Success Target</th></tr>
+<tr><td><b>1. App Login</b></td><td>Customer authenticates securely into the mobile-responsive application.</td><td>Seamless single-sign-on / local auth</td></tr>
+<tr><td><b>2. Portal Provisioning</b></td><td>Customer selects target job portal(s) and securely enters username and password.</td><td>Secure credential encryption at rest</td></tr>
+<tr><td><b>3. Resume Ingestion</b></td><td>Customer uploads master resume (PDF/DOCX); text and structure are parsed.</td><td>&lt; 5 seconds ingestion latency</td></tr>
+<tr><td><b>4. Dynamic Skill Profiling</b></td><td>Skills are extracted automatically from the resume into an interactive matrix where the user inputs <i>Years of Experience</i> and <i>Last Used Year</i>.</td><td>100% core skill extraction with recency</td></tr>
+<tr><td><b>5. Predefined QA Setup</b></td><td>Customer sets standard answers for common portal questions (CTC, Notice Period, Serving Notice, Relocation).</td><td>One-time setup; reusable forever</td></tr>
+<tr><td><b>6. Autonomous Matching</b></td><td>Agent scans portal daily, scores listings (&ge; 70%), and checks experience/recency barriers.</td><td>&ge; 90% judged relevant on weekly audit</td></tr>
+<tr><td><b>7. Dynamic LLM QA &amp; Mobile Push</b></td><td>Unseen questions are answered by LLM from resume facts, saved to Question Memory, and posted to mobile app for 1-tap approval if needed.</td><td>&ge; 85% autonomous resolution rate</td></tr>
+</table>
+
+<h2>4. Proposed Solution & Architecture</h2>
+<div class="flow">
+<div><b>1. Authentication &amp; Setup</b> &mdash; User logs into app; chooses target job portal(s) and enters portal credentials securely.</div>
+<div><b>2. Resume Upload &amp; Parsing</b> &mdash; Ingests resume file; extracts technical competencies, role history, and education.</div>
+<div><b>3. Dynamic Skill &amp; Recency Matrix</b> &mdash; UI presents extracted skills. Candidate reviews and inputs <i>Years of Experience</i> and <i>Last Used Year</i> (recency factor).</div>
+<div><b>4. Predefined QA Configuration</b> &mdash; User inputs baseline answers (Current/Expected CTC, Notice Period, Location preferences).</div>
+<div><b>5. Scheduled Portal Search</b> &mdash; Agent connects to chosen portal using stored credentials/cookies; queries fresh postings (last 24h).</div>
+<div class="gate"><b>6. Match &amp; Recency Evaluation</b> &mdash; Computes weighted match score (&ge; 70%) incorporating required skills, preferred skills, and recency verification.</div>
+<div><b>7. 3-Tier Questionnaire Cascade &amp; Mobile Feed</b> &mdash; Submits application:
+  <ul>
+    <li><b>Tier 1 (Predefined):</b> Auto-fills standard fields (CTC, notice period, location).</li>
+    <li><b>Tier 2 (LLM Grounding):</b> Answers dynamic questions from resume facts with confidence &ge; 85%.</li>
+    <li><b>Tier 3 (Mobile App Push):</b> Posts new/subjective questions to the mobile UI with pre-drafted AI answers for 1-tap candidate approval.</li>
+  </ul>
+</div>
+<div><b>8. Memory Persistence &amp; Audit</b> &mdash; Approved questions are permanently cached in Question Memory to auto-fill future occurrences. Decision recorded in SQLite.</div>
+</div>
+
+<h3>Dynamic Skill Profiling &amp; Recency Weighting</h3>
+<ol>
+<li>The resume parser dynamically identifies technical skills, frameworks, and cloud platforms from the uploaded document.</li>
+<li>The candidate verifies the extracted list in the UI and specifies:
+  <ul>
+    <li><b>Years of Experience:</b> Total hands-on duration (e.g. Go: 6 years, Kubernetes: 5 years).</li>
+    <li><b>Last Used Year:</b> Recency indicator (e.g. 2026 vs. 2021). Roles requiring active experience in legacy tools can be filtered out.</li>
+  </ul>
+</li>
+<li>The match engine validates that the candidate's verified years of experience and recency satisfy the job description's explicit requirements before proceeding to auto-apply.</li>
+</ol>
+
+<h2>5. Scope</h2>
+<table>
+<tr><th>In scope</th><th>Out of scope (first release)</th></tr>
+<tr>
+  <td>
+    &bull; Customer app login &amp; session security<br>
+    &bull; Portal credential provisioning (target job portal login/password input)<br>
+    &bull; Resume document upload (PDF, DOCX) &amp; text extraction<br>
+    &bull; <b>Dynamic skill set extraction</b> with customizable <i>Years of Experience</i> and <i>Last Used Year</i><br>
+    &bull; Predefined screening QA profile (compensation, notice period, relocation)<br>
+    &bull; Daily autonomous search &amp; 70% weighted matching<br>
+    &bull; <b>LLM resume-grounded questionnaire reasoning</b><br>
+    &bull; <b>Mobile app push &amp; 1-tap approval feed</b> for novel questions<br>
+    &bull; Question Memory Store (caching past Q&amp;A pairs permanently)
+  </td>
+  <td>
+    &bull; Automated salary negotiation<br>
+    &bull; Direct recruiter chat bot / interview scheduling<br>
+    &bull; Video interview proxy / automated video responses<br>
+    &bull; Third-party paid job posting scrapers
+  </td>
+</tr>
+</table>
+
+<h2>6. Benefits</h2>
+<ul>
+<li><b>Effortless Onboarding:</b> Upload resume once; skills, tools, and experience durations are extracted automatically.</li>
+<li><b>Recency Accuracy:</b> Tracking <i>Last Used Year</i> prevents applying to roles that require active recency in tools you haven't touched in years.</li>
+<li><b>Continuous Learning:</b> When a new question appears on a portal, the agent answers it using LLM reasoning, notifies you on mobile for 1-tap sign-off, and remembers the answer forever.</li>
+<li><b>Multi-Portal Extensibility:</b> Pluggable portal connector architecture allows adding multiple career portals under a unified mobile interface.</li>
+<li><b>Zero Daily Overhead:</b> What used to take an hour of manual form-filling every morning becomes a 10-second review on your phone.</li>
+</ul>
+
+<h2>7. Costs and Resources</h2>
+<table>
+<tr><th>Item</th><th>Estimate</th></tr>
+<tr><td>Build effort</td><td>2 to 3 weeks part-time</td></tr>
+<tr><td>Hosting Architecture</td><td>Local single-binary Go engine with embedded mobile web UI; zero cloud hosting fees</td></tr>
+<tr><td>LLM API Usage</td><td>Minimal: &le; $1.00 / month for dynamic skill extraction and questionnaire reasoning</td></tr>
+<tr><td>Maintenance</td><td>1 to 2 hours per month for portal connector DOM updates if layouts change</td></tr>
+</table>
+
+<h2>8. Risks and Mitigations</h2>
+<table>
+<tr><th>Risk</th><th>Impact</th><th>Mitigation</th></tr>
+<tr><td>Portal account restrictions / anti-bot flags</td><td>High</td><td>Gaussian randomized pacing (8&ndash;25s); browser fingerprint masking; low daily volume; immediate circuit breaker pause on CAPTCHA</td></tr>
+<tr><td>Portal credential compromise</td><td>High</td><td>AES-256-GCM encryption at rest; file-mounted runtime secrets; zero credentials in logs or git</td></tr>
+<tr><td>LLM hallucination on questionnaire</td><td>High</td><td>Strict prompt grounding forbidding hallucination; confidence threshold (&ge; 85%); mobile app approval feed for candidate oversight</td></tr>
+<tr><td>Extracted skill inaccuracy</td><td>Medium</td><td>Candidate reviews and edits extracted skills, years of experience, and last used year in the UI before activation</td></tr>
+</table>
+
+<h2>9. Key Decisions Confirmed</h2>
+<ol>
+<li><b>Customer Workflow:</b> Full mobile onboarding supported: App Login &rarr; Portal Credentials &rarr; Resume Upload &rarr; Dynamic Skill Matrix (Years of Exp &amp; Last Used Year) &rarr; Predefined QA Setup &rarr; Automated Scan &rarr; Mobile QA Feed.</li>
+<li><b>Question Memory:</b> Any question answered or approved on the mobile app is permanently cached in SQLite to guarantee zero duplicate prompts.</li>
+<li><b>Pilot Safeguards:</b> Daily application cap set to 5 applications/day during initial 2-week pilot; 8&ndash;25s human pacing.</li>
+</ol>
+
+<footer>Planning figures marked as assumptions are estimates and should be validated during the pilot.</footer>
+</main>
+</body>
+</html>

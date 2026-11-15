@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Architecture Visualization: Autonomous Job-Matching Agent</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    .node-card {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .node-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    .pulse-dot {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.15); }
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-6 min-h-screen">
+
+  <!-- Header -->
+  <header class="max-w-7xl mx-auto mb-8 border-b border-[var(--border)] pb-6">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-500 border border-blue-500/20 mb-2">
+          <span>v1.3.0 &bull; HLD Phase</span>
+          <span class="inline-block w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+          <span>Requirements Finalization &bull; Microservice / Multi-Agent Ready</span>
+        </div>
+        <h1 class="text-2xl font-bold tracking-tight text-[var(--foreground)]">System Architecture Visualizer</h1>
+        <p class="text-sm text-[var(--muted-foreground)] mt-1">
+          Interactive blueprint of the Autonomous Job-Matching Agent &amp; Application Proxy.
+        </p>
+      </div>
+
+      <!-- Quick Metrics Pill -->
+      <div class="flex items-center gap-3 bg-[var(--card)] border border-[var(--border)] rounded-xl p-3 text-xs shadow-sm">
+        <div class="text-center px-3 border-r border-[var(--border)]">
+          <div class="text-[var(--muted-foreground)]">Match Gate</div>
+          <div class="text-sm font-bold text-emerald-500">&ge; 70% + Recency</div>
+        </div>
+        <div class="text-center px-3 border-r border-[var(--border)]">
+          <div class="text-[var(--muted-foreground)]">Vault Security</div>
+          <div class="text-sm font-bold text-purple-500">AES-256-GCM</div>
+        </div>
+        <div class="text-center px-3 border-r border-[var(--border)]">
+          <div class="text-[var(--muted-foreground)]">Pacing Delay</div>
+          <div class="text-sm font-bold text-amber-500">8s &ndash; 25s</div>
+        </div>
+        <div class="text-center px-3">
+          <div class="text-[var(--muted-foreground)]">Pilot Cap</div>
+          <div class="text-sm font-bold text-blue-500">5 / day</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="flex items-center gap-2 mt-6 overflow-x-auto pb-1 text-sm font-medium">
+      <button onclick="switchTab('workflow')" id="tab-workflow" class="px-4 py-2 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] shadow-sm transition">
+        1. Customer Onboarding &amp; Mobile Flow
+      </button>
+      <button onclick="switchTab('c4')" id="tab-c4" class="px-4 py-2 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--card)] transition">
+        2. Subsystem Boundaries (Microservice / Multi-Agent)
+      </button>
+      <button onclick="switchTab('qa')" id="tab-qa" class="px-4 py-2 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--card)] transition">
+        3. 3-Tier QA Simulator
+      </button>
+      <button onclick="switchTab('recency')" id="tab-recency" class="px-4 py-2 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--card)] transition">
+        4. Skill Recency Calculator
+      </button>
+      <button onclick="switchTab('security')" id="tab-security" class="px-4 py-2 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--card)] transition">
+        5. Threat Model &amp; Vault
+      </button>
+      <button onclick="switchTab('data')" id="tab-data" class="px-4 py-2 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--card)] transition">
+        6. Data &amp; Storage Engine
+      </button>
+      <button onclick="switchTab('deployment')" id="tab-deployment" class="px-4 py-2 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--card)] transition">
+        7. Deployment &amp; Remote Access
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT VIEWS -->
+  <main class="max-w-7xl mx-auto">
+
+    <!-- TAB 1: CUSTOMER ONBOARDING & MOBILE WORKFLOW -->
+    <section id="view-workflow" class="space-y-6">
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm">
+        <div class="max-w-2xl mb-6">
+          <h2 class="text-lg font-bold text-[var(--foreground)]">Customer Onboarding &amp; Mobile Pipeline</h2>
+          <p class="text-xs text-[var(--muted-foreground)] mt-1">
+            Visual walkthrough of how the candidate sets up credentials, uploads a resume, customizes skill recency, and approves questions from mobile.
+          </p>
+        </div>
+
+        <!-- 6 Step Pipeline Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
+          
+          <div class="p-4 rounded-xl border border-[var(--border)] bg-[var(--background)] space-y-2">
+            <div class="w-6 h-6 rounded-full bg-blue-500/10 text-blue-500 font-bold flex items-center justify-center">1</div>
+            <div class="font-bold text-[var(--foreground)]">App Login</div>
+            <p class="text-[var(--muted-foreground)] text-[12px]">Customer authenticates into the local mobile web app via JWT session.</p>
+          </div>
+
+          <div class="p-4 rounded-xl border border-[var(--border)] bg-[var(--background)] space-y-2">
+            <div class="w-6 h-6 rounded-full bg-purple-500/10 text-purple-500 font-bold flex items-center justify-center">2</div>
+            <div class="font-bold text-[var(--foreground)]">Portal Provisioning</div>
+            <p class="text-[var(--muted-foreground)] text-[12px]">Selects portal &amp; enters User ID/Password. Encrypted via AES-256-GCM.</p>
+          </div>
+
+          <div class="p-4 rounded-xl border border-[var(--border)] bg-[var(--background)] space-y-2">
+            <div class="w-6 h-6 rounded-full bg-emerald-500/10 text-emerald-500 font-bold flex items-center justify-center">3</div>
+            <div class="font-bold text-[var(--foreground)]">Resume Ingestion</div>
+            <p class="text-[var(--muted-foreground)] text-[12px]">Uploads PDF/DOCX master resume. Extracted into raw text &amp; timeline.</p>
+          </div>
+
+          <div class="p-4 rounded-xl border border-[var(--border)] bg-[var(--background)] space-y-2">
+            <div class="w-6 h-6 rounded-full bg-amber-500/10 text-amber-500 font-bold flex items-center justify-center">4</div>
+            <div class="font-bold text-[var(--foreground)]">Dynamic Skill Matrix</div>
+            <p class="text-[var(--muted-foreground)] text-[12px]">LLM extracts skills. User sets <i>Years of Exp</i> &amp; <i>Last Used Year</i>.</p>
+          </div>
+
+          <div class="p-4 rounded-xl border border-[var(--border)] bg-[var(--background)] space-y-2">
+            <div class="w-6 h-6 rounded-full bg-blue-500/10 text-blue-500 font-bold flex items-center justify-center">5</div>
+            <div class="font-bold text-[var(--foreground)]">Predefined QA Setup</div>
+            <p class="text-[var(--muted-foreground)] text-[12px]">Sets standard answers for CTC, notice period, and relocation.</p>
+          </div>
+
+          <div class="p-4 rounded-xl border border-[var(--border)] bg-[var(--background)] space-y-2">
+            <div class="w-6 h-6 rounded-full bg-rose-500/10 text-rose-500 font-bold flex items-center justify-center">6</div>
+            <div class="font-bold text-[var(--foreground)]">Mobile Question Feed</div>
+            <p class="text-[var(--muted-foreground)] text-[12px]">Novel questions push to phone feed with AI draft for 1-tap sign-off.</p>
+          </div>
+
+        </div>
+
+        <!-- Flow Description Callout -->
+        <div class="mt-6 p-4 rounded-xl bg-blue-500/5 border border-blue-500/20 text-xs text-[var(--muted-foreground)] flex items-start gap-3">
+          <span class="text-blue-500 text-base font-bold">&#8505;</span>
+          <div>
+            <b class="text-[var(--foreground)]">Unified Single-Binary Execution:</b>
+            The candidate performs initial onboarding from either a laptop or phone browser (<code class="text-blue-500">http://localhost:8080</code>). Once configured, the autonomous Go scheduler takes over at 09:00 AM daily, only waking the candidate on mobile when an ambiguous questionnaire requires a 10-second review.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: SUBSYSTEM BOUNDARIES & COMPONENT ARCHITECTURE -->
+    <section id="view-c4" class="hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left 8 Cols: Architectural Flow -->
+        <div class="lg:col-span-8 space-y-4">
+          <div class="bg-[var(--card)] border-2 border-blue-500/30 rounded-2xl p-6 shadow-sm relative">
+            <div class="absolute -top-3 left-6 px-3 py-0.5 bg-blue-600 text-white text-xs font-bold rounded-full uppercase tracking-wider">
+              Service Boundaries: Microservice / Multi-Agent Ready
+            </div>
+
+            <!-- Layer 1: Embedded Frontend SPA -->
+            <div class="mb-5 p-4 rounded-xl border border-[var(--border)] bg-blue-500/5 hover:border-blue-500/40 transition">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-blue-500 uppercase tracking-wider">Layer 1: Embedded Mobile SPA (//go:embed web/dist/*)</span>
+                <span class="text-xs px-2 py-0.5 rounded bg-blue-500/10 text-blue-600 font-mono">React 18 + Tailwind</span>
+              </div>
+              <div class="grid grid-cols-4 gap-2 text-xs">
+                <div class="p-2 rounded-lg bg-[var(--card)] border border-[var(--border)] text-center">
+                  <div class="font-semibold">App Login</div>
+                  <div class="text-[var(--muted-foreground)] text-[12px] mt-0.5">JWT session</div>
+                </div>
+                <div class="p-2 rounded-lg bg-[var(--card)] border border-[var(--border)] text-center">
+                  <div class="font-semibold">Portal Vault</div>
+                  <div class="text-[var(--muted-foreground)] text-[12px] mt-0.5">Encrypted creds</div>
+                </div>
+                <div class="p-2 rounded-lg bg-[var(--card)] border border-[var(--border)] text-center">
+                  <div class="font-semibold">Skill Matrix</div>
+                  <div class="text-[var(--muted-foreground)] text-[12px] mt-0.5">Exp &amp; Recency</div>
+                </div>
+                <div class="p-2 rounded-lg bg-[var(--card)] border border-[var(--border)] text-center">
+                  <div class="font-semibold">Mobile Feed</div>
+                  <div class="text-[var(--muted-foreground)] text-[12px] mt-0.5">1-tap approvals</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Inter-Layer Arrow -->
+            <div class="flex justify-center my-2 text-[var(--muted-foreground)] text-xs font-mono">
+              &darr; REST API &amp; Server-Sent Events (SSE /api/v1/stream) &uarr;
+            </div>
+
+            <!-- Layer 2: API Gateway -->
+            <div class="mb-5 p-4 rounded-xl border border-[var(--border)] bg-[var(--background)]">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-[var(--foreground)] uppercase tracking-wider">Layer 2: HTTP &amp; Event Gateway</span>
+                <span class="text-xs px-2 py-0.5 rounded bg-purple-500/10 text-purple-600 font-mono">Chi Router + JWT Auth</span>
+              </div>
+              <div class="grid grid-cols-4 gap-2 text-xs font-mono">
+                <div class="p-2 bg-[var(--card)] border border-[var(--border)] rounded text-center">POST /auth/login</div>
+                <div class="p-2 bg-[var(--card)] border border-[var(--border)] rounded text-center">POST /resume/upload</div>
+                <div class="p-2 bg-[var(--card)] border border-[var(--border)] rounded text-center">PUT /skills</div>
+                <div class="p-2 bg-[var(--card)] border border-[var(--border)] rounded text-center">POST /queue/:id/approve</div>
+              </div>
+            </div>
+
+            <!-- Layer 3: Domain Core Engines -->
+            <div class="p-4 rounded-xl border border-[var(--border)] bg-emerald-500/5 hover:border-emerald-500/40 transition">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold text-emerald-500 uppercase tracking-wider">Layer 3: Autonomous Core Domain Engines</span>
+                <span class="text-xs px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 font-mono">Clean Architecture</span>
+              </div>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                <div class="p-3 bg-[var(--card)] border border-[var(--border)] rounded-lg">
+                  <div class="font-bold text-emerald-600">Resume &amp; Skill Parser</div>
+                  <p class="text-[var(--muted-foreground)] text-[12px] mt-1">PDF/DOCX extraction + LLM dynamic skill set extraction.</p>
+                </div>
+                <div class="p-3 bg-[var(--card)] border border-[var(--border)] rounded-lg">
+                  <div class="font-bold text-emerald-600">Recency Matcher</div>
+                  <p class="text-[var(--muted-foreground)] text-[12px] mt-1">Weighted scoring incorporates Years of Exp &amp; Last Used Year.</p>
+                </div>
+                <div class="p-3 bg-[var(--card)] border border-[var(--border)] rounded-lg">
+                  <div class="font-bold text-emerald-600">3-Tier QA Engine</div>
+                  <p class="text-[var(--muted-foreground)] text-[12px] mt-1">Predefined QA &rarr; LLM Grounding &rarr; Mobile Push Feed.</p>
+                </div>
+                <div class="p-3 bg-[var(--card)] border border-[var(--border)] rounded-lg">
+                  <div class="font-bold text-emerald-600">Stealth Crawler</div>
+                  <p class="text-[var(--muted-foreground)] text-[12px] mt-1">Playwright session, Gaussian delays (8-25s), cookie pool.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Inter-Layer Arrow -->
+            <div class="flex justify-center my-2 text-[var(--muted-foreground)] text-xs font-mono">
+              &darr; Ports &amp; Adapters Inversion &darr;
+            </div>
+
+            <!-- Layer 4: Infrastructure & Storage Adapters -->
+            <div class="p-4 rounded-xl border border-[var(--border)] bg-[var(--background)]">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-[var(--foreground)] uppercase tracking-wider">Layer 4: Adapters &amp; Local Persistence</span>
+                <span class="text-xs px-2 py-0.5 rounded bg-amber-500/10 text-amber-600 font-mono">Workspace Patterns</span>
+              </div>
+              <div class="grid grid-cols-3 gap-3 text-xs">
+                <div class="p-3 bg-[var(--card)] border border-[var(--border)] rounded-lg">
+                  <div class="font-semibold text-amber-500">AES-256-GCM Vault</div>
+                  <div class="text-[var(--muted-foreground)] text-[12px]">Encrypted portal passwords &amp; secrets</div>
+                </div>
+                <div class="p-3 bg-[var(--card)] border border-[var(--border)] rounded-lg">
+                  <div class="font-semibold text-amber-500">SQLite Repository</div>
+                  <div class="text-[var(--muted-foreground)] text-[12px]">WAL Mode, candidate_skills, Question Memory</div>
+                </div>
+                <div class="p-3 bg-[var(--card)] border border-[var(--border)] rounded-lg">
+                  <div class="font-semibold text-amber-500">LLM Reasoning Client</div>
+                  <div class="text-[var(--muted-foreground)] text-[12px]">Resume grounding proxy (T=0.0)</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Right 4 Cols: Invariants -->
+        <div class="lg:col-span-4 space-y-4">
+          <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 shadow-sm">
+            <h3 class="text-sm font-bold text-[var(--foreground)] flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+              Architectural Invariants
+            </h3>
+            <ul class="mt-4 space-y-3 text-xs text-[var(--muted-foreground)]">
+              <li class="flex items-start gap-2">
+                <span class="text-blue-500 font-bold">&#10003;</span>
+                <span><b>Zero Cloud Hosting:</b> Runs completely on your laptop/server as a single binary. Zero ongoing server costs.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-blue-500 font-bold">&#10003;</span>
+                <span><b>Password Protection:</b> Job portal passwords entered on your phone are never saved in plaintext; AES-256-GCM encrypted.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-blue-500 font-bold">&#10003;</span>
+                <span><b>Recency Safety:</b> Will never match a role requiring active experience in a tool you haven't used in 4+ years.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-blue-500 font-bold">&#10003;</span>
+                <span><b>Permanent Memory:</b> Answer a question once on mobile; the agent caches it forever in SQLite.</span>
+              </li>
+            </ul>
+
+            <div class="mt-6 pt-5 border-t border-[var(--border)]">
+              <div class="text-xs font-semibold text-[var(--foreground)] mb-2">CLI &amp; Mobile UI Access:</div>
+              <div class="bg-[var(--background)] p-3 rounded-lg font-mono text-xs text-blue-500 space-y-1">
+                <div>$ job-agent ui &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-[var(--muted-foreground)]"># Web dashboard</span></div>
+                <div>$ job-agent run &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-[var(--muted-foreground)]"># Headless cron</span></div>
+                <div>$ job-agent resume &nbsp;&nbsp;<span class="text-[var(--muted-foreground)]"># Parse resume</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB 3: 3-TIER QA SIMULATOR -->
+    <section id="view-qa" class="hidden space-y-6">
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm">
+        <div class="max-w-2xl">
+          <h2 class="text-lg font-bold text-[var(--foreground)]">Interactive 3-Tier Questionnaire Simulator</h2>
+          <p class="text-xs text-[var(--muted-foreground)] mt-1">
+            Test how different recruiter questions cascade through the 3-tier resolution engine before auto-submitting.
+          </p>
+        </div>
+
+        <div class="mt-6 flex flex-wrap gap-2 text-xs font-medium">
+          <span class="self-center text-[var(--muted-foreground)] mr-2">Try Sample Question:</span>
+          <button onclick="simulateQA('ctc')" class="px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--background)] hover:border-blue-500 text-[var(--foreground)] transition">
+            "Expected Annual Compensation (CTC)?"
+          </button>
+          <button onclick="simulateQA('notice')" class="px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--background)] hover:border-blue-500 text-[var(--foreground)] transition">
+            "Official Notice Period in Days?"
+          </button>
+          <button onclick="simulateQA('kafka')" class="px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--background)] hover:border-blue-500 text-[var(--foreground)] transition">
+            "Years of hands-on experience in Kafka?"
+          </button>
+          <button onclick="simulateQA('subjective')" class="px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--background)] hover:border-blue-500 text-[var(--foreground)] transition">
+            "Why are you seeking to leave your current firm?"
+          </button>
+        </div>
+
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4" id="tier-cards">
+          <!-- Tier 1 -->
+          <div id="card-t1" class="p-5 rounded-xl border border-[var(--border)] bg-[var(--background)] transition">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-blue-500">Tier 1: Predefined QA Profile</span>
+              <span id="badge-t1" class="text-xs px-2 py-0.5 rounded bg-[var(--border)] text-[var(--muted-foreground)]">Waiting</span>
+            </div>
+            <p class="text-xs text-[var(--muted-foreground)]">Auto-fills values configured in the Predefined QA screen (CTC, notice period, location).</p>
+            <div id="result-t1" class="mt-4 p-3 rounded-lg bg-[var(--card)] border border-[var(--border)] font-mono text-xs text-[var(--muted-foreground)]">
+              No active evaluation.
+            </div>
+          </div>
+
+          <!-- Tier 2 -->
+          <div id="card-t2" class="p-5 rounded-xl border border-[var(--border)] bg-[var(--background)] transition">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-purple-500">Tier 2: LLM Resume Grounding</span>
+              <span id="badge-t2" class="text-xs px-2 py-0.5 rounded bg-[var(--border)] text-[var(--muted-foreground)]">Waiting</span>
+            </div>
+            <p class="text-xs text-[var(--muted-foreground)]">LLM evaluates question strictly against resume context + verified skill matrix (&ge; 85% confidence).</p>
+            <div id="result-t2" class="mt-4 p-3 rounded-lg bg-[var(--card)] border border-[var(--border)] font-mono text-xs text-[var(--muted-foreground)]">
+              No active evaluation.
+            </div>
+          </div>
+
+          <!-- Tier 3 -->
+          <div id="card-t3" class="p-5 rounded-xl border border-[var(--border)] bg-[var(--background)] transition">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-amber-500">Tier 3: Mobile App Push Feed</span>
+              <span id="badge-t3" class="text-xs px-2 py-0.5 rounded bg-[var(--border)] text-[var(--muted-foreground)]">Waiting</span>
+            </div>
+            <p class="text-xs text-[var(--muted-foreground)]">Pushes question card to mobile app feed with AI draft. 1-tap approval caches in Question Memory.</p>
+            <div id="result-t3" class="mt-4 p-3 rounded-lg bg-[var(--card)] border border-[var(--border)] font-mono text-xs text-[var(--muted-foreground)]">
+              No active evaluation.
+            </div>
+          </div>
+        </div>
+
+        <div id="resolution-banner" class="mt-6 p-4 rounded-xl border border-dashed border-[var(--border)] text-xs flex items-center justify-between">
+          <span class="text-[var(--muted-foreground)]">Select a question above to simulate the decision flow.</span>
+          <span class="font-mono text-xs text-[var(--muted-foreground)]">State: READY</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: SKILL RECENCY CALCULATOR -->
+    <section id="view-recency" class="hidden space-y-6">
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm">
+        <h2 class="text-lg font-bold text-[var(--foreground)]">Dynamic Skill Matrix &amp; Recency Decay Calculator</h2>
+        <p class="text-xs text-[var(--muted-foreground)] mt-1">
+          Shows how the candidate's configured <i>Years of Experience</i> and <i>Last Used Year</i> impact the final match score.
+        </p>
+
+        <!-- Interactive Calculator -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+          <div class="p-5 rounded-xl border border-[var(--border)] bg-[var(--background)] space-y-4 text-xs">
+            <div class="font-bold text-[var(--foreground)]">Candidate Skill Configuration:</div>
+            
+            <div>
+              <label class="block text-[var(--muted-foreground)] mb-1">Technology Skill:</label>
+              <select id="calc-skill" onchange="runRecencyCalc()" class="w-full p-2 rounded-lg bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)]">
+                <option value="go">Go / Golang (Core Language)</option>
+                <option value="k8s">Kubernetes / Containers</option>
+                <option value="kafka">Kafka / Event Streaming</option>
+                <option value="python">Python (Scripting &amp; Tools)</option>
+              </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[var(--muted-foreground)] mb-1">Years of Exp:</label>
+                <input type="number" id="calc-exp" value="6.0" step="0.5" oninput="runRecencyCalc()" class="w-full p-2 rounded-lg bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)]">
+              </div>
+              <div>
+                <label class="block text-[var(--muted-foreground)] mb-1">Last Used Year:</label>
+                <select id="calc-year" onchange="runRecencyCalc()" class="w-full p-2 rounded-lg bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)]">
+                  <option value="2026">2026 (Active Currently)</option>
+                  <option value="2025">2025 (1 Year Ago)</option>
+                  <option value="2024">2024 (2 Years Ago)</option>
+                  <option value="2021">2021 (Legacy / Stale)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-[var(--border)] text-[var(--muted-foreground)] text-[12px]">
+              Job Posting Requirement: <b>5.0 Years Required</b>
+            </div>
+          </div>
+
+          <!-- Output Box -->
+          <div class="p-5 rounded-xl border border-[var(--border)] bg-[var(--background)] flex flex-col justify-between text-xs">
+            <div>
+              <div class="font-bold text-[var(--foreground)] mb-2">Calculated Recency &amp; Match Result:</div>
+              <div class="space-y-2" id="calc-output">
+                <div class="flex justify-between py-1 border-b border-[var(--border)]">
+                  <span class="text-[var(--muted-foreground)]">Recency Multiplier (&gamma;):</span>
+                  <span class="font-bold font-mono text-emerald-500" id="res-gamma">1.0 (Full Weight)</span>
+                </div>
+                <div class="flex justify-between py-1 border-b border-[var(--border)]">
+                  <span class="text-[var(--muted-foreground)]">Experience Ratio:</span>
+                  <span class="font-bold font-mono text-emerald-500" id="res-ratio">1.0 (6.0 / 5.0)</span>
+                </div>
+                <div class="flex justify-between py-1 border-b border-[var(--border)]">
+                  <span class="text-[var(--muted-foreground)]">Effective Skill Match Score:</span>
+                  <span class="font-bold font-mono text-emerald-500 text-sm" id="res-score">100% (Passed Gate)</span>
+                </div>
+              </div>
+            </div>
+
+            <div id="calc-verdict" class="mt-4 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 font-semibold text-center">
+              &#10003; Qualified for Application Pipeline (&ge; 70%)
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: THREAT MODEL & VAULT -->
+    <section id="view-security" class="hidden space-y-6">
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm">
+        <h2 class="text-lg font-bold text-[var(--foreground)]">Security Architecture &amp; Encrypted Vault</h2>
+        <p class="text-xs text-[var(--muted-foreground)] mt-1">
+          Trust boundaries and AES-256-GCM encryption safeguarding portal passwords and session tokens.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 text-xs">
+          <!-- External -->
+          <div class="border border-red-500/30 rounded-xl p-5 bg-red-500/5">
+            <div class="flex items-center justify-between mb-3">
+              <span class="font-bold text-red-500 uppercase tracking-wider">Untrusted Public Boundary</span>
+              <span class="px-2 py-0.5 rounded bg-red-500/10 text-red-500 font-mono">External Web</span>
+            </div>
+            <ul class="space-y-2 text-[var(--foreground)]">
+              <li>&bull; <b>Job Portals:</b> Bot detection, Cloudflare captchas, session invalidation.</li>
+              <li>&bull; <b>LLM Cloud Endpoint:</b> Third-party reasoning API via TLS 1.3.</li>
+            </ul>
+            <div class="mt-4 pt-3 border-t border-red-500/20 text-[var(--muted-foreground)]">
+              <b>Countermeasure:</b> Gaussian pacing (8-25s), Playwright fingerprint spoofing, zero-retry immediate halt.
+            </div>
+          </div>
+
+          <!-- Internal -->
+          <div class="border border-emerald-500/30 rounded-xl p-5 bg-emerald-500/5">
+            <div class="flex items-center justify-between mb-3">
+              <span class="font-bold text-emerald-500 uppercase tracking-wider">Local Host Trust Perimeter</span>
+              <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-500 font-mono">Candidate Machine</span>
+            </div>
+            <ul class="space-y-2 text-[var(--foreground)]">
+              <li>&bull; <b>AES-256-GCM Portal Vault:</b> User IDs and passwords encrypted at rest in SQLite.</li>
+              <li>&bull; <b>File Secrets:</b> Master key loaded from <code>${SECRETS_PATH}</code> with 0600 permissions.</li>
+              <li>&bull; <b>Zerolog Sanitizer:</b> Strips phone numbers, auth cookies, and bearer tokens before logging.</li>
+            </ul>
+            <div class="mt-4 pt-3 border-t border-emerald-500/20 text-[var(--muted-foreground)]">
+              <b>Countermeasure:</b> Adheres strictly to <code>go-secrets-file-mounted</code> and <code>go-logging-zerolog</code>.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 6: DATA & STORAGE ENGINE -->
+    <section id="view-data" class="hidden space-y-6">
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] pb-4 mb-6">
+          <div>
+            <h2 class="text-lg font-bold text-[var(--foreground)]">Local SQLite Relational Schema &amp; Storage Engine</h2>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1">
+              Embedded SQLite 3 in WAL mode with connection-pool concurrency, query indexing, forward migrations, and automated backups.
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-1 rounded-md text-[11px] font-mono bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">PRAGMA journal_mode=WAL</span>
+            <span class="px-2.5 py-1 rounded-md text-[11px] font-mono bg-blue-500/10 text-blue-600 border border-blue-500/20">busy_timeout=5000ms</span>
+          </div>
+        </div>
+
+        <!-- 5 Database Tables Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3 text-xs mb-6">
+          <!-- Table 0: app_users -->
+          <div class="border border-[var(--border)] rounded-xl p-3 bg-[var(--background)]">
+            <div class="font-bold text-sky-500 mb-2 border-b border-[var(--border)] pb-1.5 flex justify-between">
+              <span>app_users</span>
+              <span class="text-[var(--muted-foreground)] font-normal text-[10px]">Auth</span>
+            </div>
+            <ul class="space-y-1 font-mono text-[11px] text-[var(--muted-foreground)]">
+              <li><b class="text-[var(--foreground)]">id</b>: INT (PK)</li>
+              <li>username: TEXT (UK)</li>
+              <li>password_hash: TEXT</li>
+              <li>created_at: TIME</li>
+            </ul>
+          </div>
+
+          <!-- Table 1: portal_credentials -->
+          <div class="border border-[var(--border)] rounded-xl p-3 bg-[var(--background)]">
+            <div class="font-bold text-blue-500 mb-2 border-b border-[var(--border)] pb-1.5 flex justify-between">
+              <span>portal_creds</span>
+              <span class="text-[var(--muted-foreground)] font-normal text-[10px]">Encrypted</span>
+            </div>
+            <ul class="space-y-1 font-mono text-[11px] text-[var(--muted-foreground)]">
+              <li><b class="text-[var(--foreground)]">id</b>: INT (PK)</li>
+              <li>user_id: INT (FK)</li>
+              <li>portal_name: TEXT</li>
+              <li>enc_pass: TEXT</li>
+              <li>cookies: TEXT</li>
+            </ul>
+          </div>
+
+          <!-- Table 2: candidate_skills -->
+          <div class="border border-[var(--border)] rounded-xl p-3 bg-[var(--background)]">
+            <div class="font-bold text-emerald-500 mb-2 border-b border-[var(--border)] pb-1.5 flex justify-between">
+              <span>candidate_skills</span>
+              <span class="text-[var(--muted-foreground)] font-normal text-[10px]">Recency</span>
+            </div>
+            <ul class="space-y-1 font-mono text-[11px] text-[var(--muted-foreground)]">
+              <li><b class="text-[var(--foreground)]">id</b>: INT (PK)</li>
+              <li>skill_id: TEXT (UK)</li>
+              <li>years_exp: REAL</li>
+              <li>last_used_yr: INT</li>
+              <li>is_core: BOOL</li>
+            </ul>
+          </div>
+
+          <!-- Table 3: job_applications -->
+          <div class="border border-[var(--border)] rounded-xl p-3 bg-[var(--background)]">
+            <div class="font-bold text-amber-500 mb-2 border-b border-[var(--border)] pb-1.5 flex justify-between">
+              <span>job_apps</span>
+              <span class="text-[var(--muted-foreground)] font-normal text-[10px]">Audit</span>
+            </div>
+            <ul class="space-y-1 font-mono text-[11px] text-[var(--muted-foreground)]">
+              <li><b class="text-[var(--foreground)]">job_id</b>: TEXT (PK)</li>
+              <li>portal_name: TEXT</li>
+              <li>match_score: REAL</li>
+              <li>decision: TEXT</li>
+              <li>applied_at: TIME</li>
+            </ul>
+          </div>
+
+          <!-- Table 4: question_memory -->
+          <div class="border border-[var(--border)] rounded-xl p-3 bg-[var(--background)]">
+            <div class="font-bold text-purple-500 mb-2 border-b border-[var(--border)] pb-1.5 flex justify-between">
+              <span>question_memory</span>
+              <span class="text-[var(--muted-foreground)] font-normal text-[10px]">Learning</span>
+            </div>
+            <ul class="space-y-1 font-mono text-[11px] text-[var(--muted-foreground)]">
+              <li><b class="text-[var(--foreground)]">id</b>: INT (PK)</li>
+              <li>q_hash: TEXT (UK)</li>
+              <li>answer_text: TEXT</li>
+              <li>source: TEXT</li>
+              <li>confidence: REAL</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Query Performance Indexes & Storage Lifecycle Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <div class="border border-[var(--border)] rounded-xl p-4 bg-[var(--background)]">
+            <h3 class="font-bold text-[var(--foreground)] mb-2 flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+              Query Optimization Indexes (NFR-4.1)
+            </h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left font-mono text-[11px]">
+                <thead>
+                  <tr class="text-[var(--muted-foreground)] border-b border-[var(--border)]">
+                    <th class="py-1">Index Name</th>
+                    <th class="py-1">Table &amp; Columns</th>
+                    <th class="py-1">Target Query</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[var(--border)] text-[var(--foreground)]">
+                  <tr>
+                    <td class="py-1.5 text-blue-500">idx_jobs_portal_date</td>
+                    <td class="py-1.5">job_applications(portal, date DESC)</td>
+                    <td class="py-1.5 text-[var(--muted-foreground)]">Daily Digest Stream</td>
+                  </tr>
+                  <tr>
+                    <td class="py-1.5 text-blue-500">idx_jobs_decision_score</td>
+                    <td class="py-1.5">job_applications(decision, score DESC)</td>
+                    <td class="py-1.5 text-[var(--muted-foreground)]">Match Studio Audit</td>
+                  </tr>
+                  <tr>
+                    <td class="py-1.5 text-blue-500">idx_skills_id</td>
+                    <td class="py-1.5">candidate_skills(skill_id)</td>
+                    <td class="py-1.5 text-[var(--muted-foreground)]">Crawler Skill Match</td>
+                  </tr>
+                  <tr>
+                    <td class="py-1.5 text-blue-500">idx_qmem_hash</td>
+                    <td class="py-1.5">question_memory(question_hash)</td>
+                    <td class="py-1.5 text-[var(--muted-foreground)]">Tier 1 Cache Check</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="border border-[var(--border)] rounded-xl p-4 bg-[var(--background)]">
+            <h3 class="font-bold text-[var(--foreground)] mb-2 flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              Data Retention &amp; Backup Policy (NFR-4.5 / NFR-4.6)
+            </h3>
+            <ul class="space-y-1.5 text-[11px] text-[var(--muted-foreground)]">
+              <li>&bull; <b class="text-[var(--foreground)]">Application History:</b> Retained indefinitely as permanent audit trail.</li>
+              <li>&bull; <b class="text-[var(--foreground)]">Question Memory:</b> Retained indefinitely to continuously build candidate Q&amp;A corpus.</li>
+              <li>&bull; <b class="text-[var(--foreground)]">Daily Online Backups:</b> Uses SQLite <code>VACUUM INTO</code> after every 09:00 AM run; rolling 7 backups kept.</li>
+              <li>&bull; <b class="text-[var(--foreground)]">Resume Files:</b> Latest active in <code>resumes/active/</code>; replaced versions kept for 90 days in archive.</li>
+              <li>&bull; <b class="text-[var(--foreground)]">Session Cookies:</b> Purged automatically if inactive for &gt; 7 days.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 7: DEPLOYMENT & REMOTE ACCESS -->
+    <section id="view-deployment" class="hidden space-y-6">
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] pb-4 mb-6">
+          <div>
+            <h2 class="text-lg font-bold text-[var(--foreground)]">Deployment Architecture &amp; Remote Access</h2>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1">
+              Self-contained local hosting on candidate hardware, Tailscale zero-trust mobile tunneling, and platform distribution.
+            </p>
+          </div>
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-600 border border-purple-500/20">
+            Single Binary Portability &bull; Zero Cloud DB Dependency
+          </span>
+        </div>
+
+        <!-- 3 Architecture Pillars -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs mb-6">
+          <!-- Pillar 1: Host Machine -->
+          <div class="border border-[var(--border)] rounded-xl p-4 bg-[var(--background)]">
+            <div class="font-bold text-blue-500 mb-2 border-b border-[var(--border)] pb-1.5 flex justify-between">
+              <span>1. Candidate Host Machine</span>
+              <span class="text-[10px] text-[var(--muted-foreground)]">Local Service</span>
+            </div>
+            <p class="text-[11px] text-[var(--muted-foreground)] mb-2">
+              Runs as a background service or terminal command on personal laptop or home home server.
+            </p>
+            <ul class="space-y-1 font-mono text-[11px] text-[var(--foreground)]">
+              <li>&bull; <code>job-agent</code> Go binary (embedded SPA)</li>
+              <li>&bull; Chromium headless (Playwright)</li>
+              <li>&bull; <code>~/.job-agent/data/jobs.db</code> (SQLite)</li>
+              <li>&bull; <code>~/.job-agent/secrets/</code> (0600 keys)</li>
+            </ul>
+          </div>
+
+          <!-- Pillar 2: Tailscale Mesh VPN -->
+          <div class="border border-[var(--border)] rounded-xl p-4 bg-[var(--background)]">
+            <div class="font-bold text-emerald-500 mb-2 border-b border-[var(--border)] pb-1.5 flex justify-between">
+              <span>2. WireGuard Tunnel (Tailscale)</span>
+              <span class="text-[10px] text-[var(--muted-foreground)]">Zero Trust</span>
+            </div>
+            <p class="text-[11px] text-[var(--muted-foreground)] mb-2">
+              Provides private, end-to-end encrypted remote access from smartphone without public ports or dynamic DNS.
+            </p>
+            <ul class="space-y-1 font-mono text-[11px] text-[var(--foreground)]">
+              <li>&bull; Bind: <code>SERVER_HOST=0.0.0.0</code></li>
+              <li>&bull; Mobile: <code>http://100.x.y.z:8080</code></li>
+              <li>&bull; Zero port forwarding needed</li>
+              <li>&bull; Mutual WireGuard authentication</li>
+            </ul>
+          </div>
+
+          <!-- Pillar 3: Outbound Cloud -->
+          <div class="border border-[var(--border)] rounded-xl p-4 bg-[var(--background)]">
+            <div class="font-bold text-purple-500 mb-2 border-b border-[var(--border)] pb-1.5 flex justify-between">
+              <span>3. External Cloud APIs</span>
+              <span class="text-[10px] text-[var(--muted-foreground)]">Outbound TLS</span>
+            </div>
+            <p class="text-[11px] text-[var(--muted-foreground)] mb-2">
+              Outbound connections only. Never accepts unsolicited inbound requests from public web.
+            </p>
+            <ul class="space-y-1 font-mono text-[11px] text-[var(--foreground)]">
+              <li>&bull; Portals (HTTPS / Stealth Playwright)</li>
+              <li>&bull; LLM Cloud API (TLS 1.3 / JSON schema)</li>
+              <li>&bull; Zero open public inbound ports</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- First-Run Lifecycle & Environment Table -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <div class="border border-[var(--border)] rounded-xl p-4 bg-[var(--background)]">
+            <h3 class="font-bold text-[var(--foreground)] mb-2">First-Run Bootstrap Lifecycle (NFR-5.3)</h3>
+            <ol class="space-y-2 text-[11px] text-[var(--muted-foreground)] list-decimal list-inside">
+              <li><b class="text-[var(--foreground)]">Filesystem Setup:</b> Auto-creates <code>resumes/</code>, <code>backups/</code>, and <code>logs/</code> in <code>${DATA_PATH}</code>.</li>
+              <li><b class="text-[var(--foreground)]">Permission Guardrail:</b> Validates <code>master_vault_key.txt</code> is restricted to <code>0600</code>; halts with safety error if insecure.</li>
+              <li><b class="text-[var(--foreground)]">Embedded Migrations:</b> Executes SQL migrations <code>001</code> to <code>004</code> in an atomic transaction.</li>
+              <li><b class="text-[var(--foreground)]">Admin Creation:</b> Detects zero users and opens setup wizard for initial candidate credentials.</li>
+              <li><b class="text-[var(--foreground)]">Browser Dependency:</b> Verifies Chromium binary presence; informs user to run <code>make install-browser</code> if absent.</li>
+            </ol>
+          </div>
+
+          <div class="border border-[var(--border)] rounded-xl p-4 bg-[var(--background)]">
+            <h3 class="font-bold text-[var(--foreground)] mb-2">Platform Build Targets (NFR-5.1)</h3>
+            <div class="space-y-2 text-[11px]">
+              <div class="p-2 rounded-lg bg-[var(--card)] border border-[var(--border)] flex justify-between items-center">
+                <span><b>Linux x86-64:</b> <code>linux/amd64</code></span>
+                <span class="text-[10px] text-emerald-500 font-semibold">Home Server / Cloud VM</span>
+              </div>
+              <div class="p-2 rounded-lg bg-[var(--card)] border border-[var(--border)] flex justify-between items-center">
+                <span><b>Apple Silicon:</b> <code>darwin/arm64</code></span>
+                <span class="text-[10px] text-blue-500 font-semibold">MacBook M1/M2/M3</span>
+              </div>
+              <div class="p-2 rounded-lg bg-[var(--card)] border border-[var(--border)] flex justify-between items-center">
+                <span><b>Windows 11:</b> <code>windows/amd64</code></span>
+                <span class="text-[10px] text-purple-500 font-semibold">Local Laptop (.exe)</span>
+              </div>
+              <div class="p-2 rounded-lg bg-[var(--card)] border border-[var(--border)] flex justify-between items-center">
+                <span><b>Docker Image:</b> <code>ghcr.io/job-agent</code></span>
+                <span class="text-[10px] text-amber-500 font-semibold">Headless Container</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function switchTab(tabId) {
+      ['workflow', 'c4', 'qa', 'recency', 'security', 'data', 'deployment'].forEach(id => {
+        const view = document.getElementById('view-' + id);
+        if (view) view.classList.add('hidden');
+        const btn = document.getElementById('tab-' + id);
+        if (btn) {
+          btn.classList.remove('bg-[var(--primary)]', 'text-[var(--primary-foreground)]');
+          btn.classList.add('text-[var(--muted-foreground)]');
+        }
+      });
+      const targetView = document.getElementById('view-' + tabId);
+      if (targetView) targetView.classList.remove('hidden');
+      const activeBtn = document.getElementById('tab-' + tabId);
+      if (activeBtn) {
+        activeBtn.classList.remove('text-[var(--muted-foreground)]');
+        activeBtn.classList.add('bg-[var(--primary)]', 'text-[var(--primary-foreground)]');
+      }
+    }
+
+    function simulateQA(type) {
+      const b1 = document.getElementById('badge-t1');
+      const b2 = document.getElementById('badge-t2');
+      const b3 = document.getElementById('badge-t3');
+      const r1 = document.getElementById('result-t1');
+      const r2 = document.getElementById('result-t2');
+      const r3 = document.getElementById('result-t3');
+      const banner = document.getElementById('resolution-banner');
+
+      b1.className = b2.className = b3.className = 'text-xs px-2 py-0.5 rounded bg-[var(--border)] text-[var(--muted-foreground)]';
+      b1.innerText = b2.innerText = b3.innerText = 'Bypassed';
+      r1.innerText = r2.innerText = r3.innerText = 'Skipped in cascade.';
+
+      if (type === 'ctc') {
+        b1.className = 'text-xs px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-600 font-bold';
+        b1.innerText = 'RESOLVED';
+        r1.innerText = 'Regex Match: /expected.*ctc/i\nAuto-fill: "42.0 LPA" (from Predefined QA Settings)';
+        banner.innerHTML = '<span class="text-emerald-600 font-semibold">&#10003; Form Field Auto-filled via Tier 1 Predefined QA Profile</span><span class="font-mono text-emerald-600">Decision: AUTO_SUBMIT</span>';
+      } else if (type === 'notice') {
+        b1.className = 'text-xs px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-600 font-bold';
+        b1.innerText = 'RESOLVED';
+        r1.innerText = 'Regex Match: /notice.*period/i\nAuto-fill: "30" (Numeric dropdown option)';
+        banner.innerHTML = '<span class="text-emerald-600 font-semibold">&#10003; Form Field Auto-filled via Tier 1 Predefined QA Profile</span><span class="font-mono text-emerald-600">Decision: AUTO_SUBMIT</span>';
+      } else if (type === 'kafka') {
+        b1.innerText = 'No Regex Match';
+        b2.className = 'text-xs px-2 py-0.5 rounded bg-purple-500/20 text-purple-600 font-bold';
+        b2.innerText = 'RESOLVED';
+        r2.innerText = 'LLM Confidence: 0.94\nAnswer: "5 years production experience with distributed event streaming in Go"\nVerified Recency: 2026';
+        banner.innerHTML = '<span class="text-purple-600 font-semibold">&#10003; Form Field Auto-filled via Tier 2 LLM Resume Grounding (Confidence 94% &ge; 85%) &rarr; Saved to Memory Cache</span><span class="font-mono text-purple-600">Decision: AUTO_SUBMIT</span>';
+      } else if (type === 'subjective') {
+        b1.innerText = 'No Regex Match';
+        b2.className = 'text-xs px-2 py-0.5 rounded bg-amber-500/20 text-amber-600 font-bold';
+        b2.innerText = 'Low Confidence (0.20)';
+        r2.innerText = 'LLM Reason: Subjective question absent from resume facts. Did not hallucinate.';
+        b3.className = 'text-xs px-2 py-0.5 rounded bg-amber-500/20 text-amber-600 font-bold';
+        b3.innerText = 'POSTED TO APP';
+        r3.innerText = 'Question card pushed to Mobile Feed. Awaiting Candidate 1-tap approval.';
+        banner.innerHTML = '<span class="text-amber-600 font-semibold">&#9888; Question Posted to Mobile App Feed (Safety Guardrail: Zero Hallucination)</span><span class="font-mono text-amber-600">Decision: AWAITING_MOBILE_INPUT</span>';
+      }
+    }
+
+    function runRecencyCalc() {
+      const exp = parseFloat(document.getElementById('calc-exp').value) || 0;
+      const year = parseInt(document.getElementById('calc-year').value);
+      const reqExp = 5.0;
+      const currentYear = 2026;
+      const deltaY = currentYear - year;
+
+      let gamma = 1.0;
+      let gammaText = '1.0 (Full Weight)';
+      if (deltaY === 2) {
+        gamma = 0.8;
+        gammaText = '0.8 (Minor Decay)';
+      } else if (deltaY >= 3) {
+        gamma = 0.5;
+        gammaText = '0.5 (Stale/Legacy Penalty)';
+      }
+
+      const ratio = Math.min(1.0, exp / reqExp);
+      const finalScore = Math.round(gamma * ratio * 100);
+
+      document.getElementById('res-gamma').innerText = gammaText;
+      document.getElementById('res-ratio').innerText = ratio.toFixed(2) + ' (' + exp.toFixed(1) + ' / ' + reqExp.toFixed(1) + ')';
+      
+      const scoreElem = document.getElementById('res-score');
+      const verdictElem = document.getElementById('calc-verdict');
+
+      scoreElem.innerText = finalScore + '%';
+      if (finalScore >= 70) {
+        scoreElem.className = 'font-bold font-mono text-emerald-500 text-sm';
+        verdictElem.className = 'mt-4 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 font-semibold text-center';
+        verdictElem.innerHTML = '&#10003; Qualified for Application Pipeline (&ge; 70%)';
+      } else {
+        scoreElem.className = 'font-bold font-mono text-rose-500 text-sm';
+        verdictElem.className = 'mt-4 p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-600 font-semibold text-center';
+        verdictElem.innerHTML = '&#9888; Disqualified by Recency Decay (&lt; 70% threshold)';
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>High-Level Component Architecture: Job-Matching Agent</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        darkMode: true,
+        background: '#0f172a',
+        primaryColor: '#1e293b',
+        primaryTextColor: '#f8fafc',
+        primaryBorderColor: '#334155',
+        lineColor: '#38bdf8',
+        secondaryColor: '#0f172a',
+        tertiaryColor: '#1e293b',
+        mainBkg: '#0f172a',
+        nodeBorder: '#475569',
+        clusterBkg: '#1e293b88',
+        clusterBorder: '#475569'
+      },
+      flowchart: {
+        curve: 'basis',
+        nodeSpacing: 45,
+        rankSpacing: 55,
+        useMaxWidth: false
+      }
+    });
+  </script>
+  <style>
+    /* Custom SVG pan/zoom container */
+    #mermaid-container svg {
+      max-width: 100% !important;
+      height: auto !important;
+      transition: transform 0.2s ease;
+      transform-origin: center top;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background-color: #334155;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen antialiased flex flex-col font-sans">
+
+  <!-- Top Navigation Bar -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400 font-bold">
+          &#9881;
+        </div>
+        <div>
+          <h1 class="font-bold text-base text-slate-100 tracking-tight flex items-center gap-2">
+            High-Level Component Architecture
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 font-mono">v1.3.0 &bull; HLD Phase</span>
+          </h1>
+          <p class="text-xs text-slate-400">Requirements Finalization &amp; High-Level Design &bull; Microservice / Multi-Agent Ready</p>
+        </div>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="flex items-center gap-2">
+        <button onclick="resetZoom()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 border border-slate-700 transition flex items-center gap-1.5">
+          <span>&#8634;</span> Reset View
+        </button>
+        <button onclick="zoomIn()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 border border-slate-700 transition">
+          + Zoom
+        </button>
+        <button onclick="zoomOut()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 border border-slate-700 transition">
+          - Zoom
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6">
+
+    <!-- Overview Bar & Key Metrics -->
+    <section class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+      <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800">
+        <span class="text-slate-400 block text-[11px] mb-1">Architecture Topology</span>
+        <span class="font-semibold text-blue-400 text-sm">Microservice / Multi-Agent</span>
+        <span class="text-slate-500 block text-[10px] mt-0.5">High-Level Design Phase (Decoupled)</span>
+      </div>
+      <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800">
+        <span class="text-slate-400 block text-[11px] mb-1">Remote Access</span>
+        <span class="font-semibold text-emerald-400 text-sm">Tailscale Mesh VPN</span>
+        <span class="text-slate-500 block text-[10px] mt-0.5">Encrypted Mobile WireGuard</span>
+      </div>
+      <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800">
+        <span class="text-slate-400 block text-[11px] mb-1">Data Storage</span>
+        <span class="font-semibold text-purple-400 text-sm">SQLite (WAL Mode)</span>
+        <span class="text-slate-500 block text-[10px] mt-0.5">1 Writer / 4 Reader Pool</span>
+      </div>
+      <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800">
+        <span class="text-slate-400 block text-[11px] mb-1">Vault Security</span>
+        <span class="font-semibold text-amber-400 text-sm">AES-256-GCM</span>
+        <span class="text-slate-500 block text-[10px] mt-0.5">0600 File-Mounted Secrets</span>
+      </div>
+    </section>
+
+    <!-- Diagram Display Box -->
+    <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-xl relative overflow-hidden flex flex-col">
+      <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
+        <div>
+          <h2 class="text-sm font-bold text-slate-200">System Component Interaction Diagram</h2>
+          <p class="text-xs text-slate-400">Rendering live via Mermaid.js &bull; Flow covers UI Ingress, Core Domain Services, SQLite Storage, and External Cloud</p>
+        </div>
+        <div class="flex items-center gap-2 text-xs">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20">
+            <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Go 1.22 Runtime
+          </span>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> TLS 1.3 Outbound
+          </span>
+        </div>
+      </div>
+
+      <!-- Diagram Rendering Area -->
+      <div id="mermaid-container" class="overflow-auto custom-scroll p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 min-h-[560px] flex items-center justify-center">
+        <pre class="mermaid text-center">
+flowchart TD
+    %% Candidate Access Layer
+    subgraph ClientLayer["1. Candidate Access Layer"]
+        MobileClient["Mobile Browser\n(Tailscale VPN / LAN)"]
+        DesktopClient["Desktop Browser\n(localhost:8080)"]
+    end
+
+    %% Subsystem & Services Boundary (Microservice / Multi-Agent Ready)
+    subgraph CoreServices["2. Core Subsystems (Microservice & Multi-Agent Ready)"]
+        
+        subgraph WebLayer["Presentation & Ingress Services"]
+            EmbeddedSPA["Mobile React Web SPA\n(Client Ingress / Mobile UI)"]
+            APIGateway["HTTP & SSE Gateway\n(API Router + Auth & Stream Broker)"]
+        end
+
+        subgraph CoreEngine["Domain Application Services"]
+            AuthService["Auth & Session Service\n(bcrypt + Token Auth)"]
+            VaultService["Portal Vault Service\n(In-Memory AES-256-GCM)"]
+            ResumeEngine["Resume Ingestion Agent\n(PDF / DOCX Text Extractor)"]
+            SkillMatrixEngine["Dynamic Skill & Recency Engine\n(Years of Exp + Recency Scoring)"]
+            MatchEngine["Job Matching Agent\n(70% Threshold + Recency Decay)"]
+            QAOrchestrator["3-Tier QA Reasoning Agent\n(T1: Regex | T2: LLM | T3: Mobile)"]
+            CrawlerEngine["Portal Crawler Agent\n(Stealth Playwright + Pacing)"]
+            SchedulerEngine["Scheduling Coordinator\n(Mon-Sat 09:00 AM Trigger)"]
+        end
+
+        subgraph DataAccess["Internal Data & Client Adapters"]
+            DBPool["SQLite Adapter & Connection Pool\n(1 Dedicated Writer + 4 Readers)"]
+            FileMgr["File & Backup Manager\n(VACUUM INTO + 90d Purge)"]
+            SecretsLoader["File Secrets Loader\n(Permissions 0600 Validation)"]
+            LLMClient["LLM API Client Adapter\n(JSON Schema + Grounding Prompts)"]
+        end
+    end
+
+    %% Local File & Database Layer
+    subgraph LocalStorage["3. Host Local Storage (${DATA_PATH})"]
+        SQLiteDB[("SQLite Database\njobs.db (WAL Mode)")]
+        FileStorage["Local File Store\n(resumes/ | backups/ | logs/)"]
+        SecretsFiles["Secrets Directory (${SECRETS_PATH})\n(master_vault_key.txt | llm_api_key.txt)"]
+    end
+
+    %% External Perimeter
+    subgraph ExternalServices["4. External Cloud Perimeter (Outbound TLS 1.3)"]
+        JobPortals["Target Job Portals\n(Portal 1, Portal 2, etc.)"]
+        LLMCloud["LLM Cloud API\n(Gemini / Vertex AI)"]
+    end
+
+    %% Connections
+    MobileClient <-->|"HTTP / SSE (Encrypted Tunnel)"| APIGateway
+    DesktopClient <-->|"HTTP / SSE (Loopback:8080)"| APIGateway
+    EmbeddedSPA <--> APIGateway
+
+    APIGateway <--> AuthService
+    APIGateway <--> VaultService
+    APIGateway <--> ResumeEngine
+    APIGateway <--> SkillMatrixEngine
+    APIGateway <--> QAOrchestrator
+
+    SchedulerEngine --> CrawlerEngine
+    CrawlerEngine <--> JobPortals
+    CrawlerEngine --> MatchEngine
+    MatchEngine --> SkillMatrixEngine
+    MatchEngine --> QAOrchestrator
+
+    QAOrchestrator --> LLMClient
+    QAOrchestrator <-->|"SSE Alert (Tier 3 Push)"| APIGateway
+    LLMClient <-->|"Structured Prompts"| LLMCloud
+
+    ResumeEngine --> LLMClient
+    ResumeEngine --> FileMgr
+
+    VaultService <--> SecretsLoader
+    LLMClient <--> SecretsLoader
+    SecretsLoader -.->|"Read on Startup"| SecretsFiles
+
+    AuthService --> DBPool
+    VaultService --> DBPool
+    SkillMatrixEngine --> DBPool
+    MatchEngine --> DBPool
+    QAOrchestrator --> DBPool
+    CrawlerEngine --> DBPool
+
+    DBPool <--> SQLiteDB
+    FileMgr <--> FileStorage
+    DBPool -.->|"Daily Backup Hook"| FileMgr
+        </pre>
+      </div>
+    </section>
+
+    <!-- Component Detail Inspector Cards -->
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+      
+      <!-- Card 1 -->
+      <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+        <div class="flex items-center gap-2 text-blue-400 font-bold text-sm">
+          <span>1.</span> Presentation &amp; Ingress
+        </div>
+        <p class="text-slate-400 leading-relaxed text-[11px]">
+          Mobile-friendly web dashboard and API gateway. Designed with strict interface boundaries, allowing it to serve embedded assets or run as an independent edge gateway service.
+        </p>
+        <div class="pt-2 border-t border-slate-800/80 font-mono text-[10px] text-slate-500">
+          React SPA &bull; HTTP Gateway &bull; SSE Streaming Broker
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+        <div class="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+          <span>2.</span> Autonomous Agent Services
+        </div>
+        <p class="text-slate-400 leading-relaxed text-[11px]">
+          Domain capabilities organized as isolated agent services: Crawler Agent, 70% Recency Matching Agent, and 3-Tier QA Reasoning Agent. Can run unified or deploy as discrete microservices/workers.
+        </p>
+        <div class="pt-2 border-t border-slate-800/80 font-mono text-[10px] text-slate-500">
+          Crawler Agent &bull; Matching Agent &bull; QA Reasoning Agent
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+        <div class="flex items-center gap-2 text-purple-400 font-bold text-sm">
+          <span>3.</span> Local Storage &amp; Vault
+        </div>
+        <p class="text-slate-400 leading-relaxed text-[11px]">
+          Single <code>jobs.db</code> SQLite file in WAL mode with a 1-writer / 4-reader connection pool. Backed up after every run via <code>VACUUM INTO</code> with a rolling 7-day retention.
+        </p>
+        <div class="pt-2 border-t border-slate-800/80 font-mono text-[10px] text-slate-500">
+          WAL Journal &bull; 0600 File Secrets &bull; Indexed Queries
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+        <div class="flex items-center gap-2 text-amber-400 font-bold text-sm">
+          <span>4.</span> Zero-Trust Connectivity
+        </div>
+        <p class="text-slate-400 leading-relaxed text-[11px]">
+          The agent requires zero open inbound firewall ports. Remote mobile phone access is routed through an encrypted Tailscale WireGuard tunnel. All cloud calls use outbound TLS 1.3.
+        </p>
+        <div class="pt-2 border-t border-slate-800/80 font-mono text-[10px] text-slate-500">
+          Tailscale Mesh &bull; No Port Forwarding &bull; Outbound Only
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+    Job-Matching Agent &bull; Autonomous Application Proxy &bull; Architecture Specification v1.3.0
+  </footer>
+
+  <!-- Pan / Zoom Script -->
+  <script>
+    let currentZoom = 1.0;
+
+    function applyZoom() {
+      const svg = document.querySelector('#mermaid-container svg');
+      if (svg) {
+        svg.style.transform = `scale(${currentZoom})`;
+      }
+    }
+
+    function zoomIn() {
+      currentZoom = Math.min(2.0, currentZoom + 0.15);
+      applyZoom();
+    }
+
+    function zoomOut() {
+      currentZoom = Math.max(0.6, currentZoom - 0.15);
+      applyZoom();
+    }
+
+    function resetZoom() {
+      currentZoom = 1.0;
+      applyZoom();
+    }
+  </script>
+</body>
+</html>

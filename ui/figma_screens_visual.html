@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Candidate Access Layer: Figma Mobile Screens & Prototype</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    /* Phone Device Frame Styling */
+    .iphone-frame {
+      width: 375px;
+      height: 780px;
+      border-radius: 50px;
+      box-shadow: 0 0 0 12px #1e293b, 0 0 0 14px #334155, 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      overflow: hidden;
+      position: relative;
+    }
+    /* Dynamic Island */
+    .dynamic-island {
+      width: 120px;
+      height: 30px;
+      background: #000;
+      border-radius: 20px;
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-betwmen;
+      padding: 0 10px;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    .pulse-dot {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.15); }
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen antialiased flex flex-col font-sans">
+
+  <!-- Header & Screen Navigation -->
+  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400 font-bold">
+          📱
+        </div>
+        <div>
+          <h1 class="font-bold text-base text-slate-100 flex items-center gap-2">
+            Candidate Access Layer: Figma Prototype
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 font-mono">Mobile App</span>
+          </h1>
+          <p class="text-xs text-slate-400">Interactive Figma screens &bull; 8 Core Mobile Views</p>
+        </div>
+      </div>
+
+      <!-- Quick Screen Switcher Chips -->
+      <div class="flex items-center gap-1.5 overflow-x-auto py-1 max-w-full text-xs">
+        <button onclick="setScreen('auth')" id="nav-auth" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-medium transition shadow-sm">
+          1. Auth
+        </button>
+        <button onclick="setScreen('vault')" id="nav-vault" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition">
+          2. Portal Vault
+        </button>
+        <button onclick="setScreen('resume')" id="nav-resume" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition">
+          3. Resume
+        </button>
+        <button onclick="setScreen('skills')" id="nav-skills" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition">
+          4. Skill Matrix
+        </button>
+        <button onclick="setScreen('qa')" id="nav-qa" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition">
+          5. Predefined QA
+        </button>
+        <button onclick="setScreen('mission')" id="nav-mission" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition">
+          6. Mission Control
+        </button>
+        <button onclick="setScreen('feed')" id="nav-feed" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-400 pulse-dot"></span>
+          7. QA Feed
+        </button>
+        <button onclick="setScreen('history')" id="nav-history" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition">
+          8. Matches
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Body Layout: Device Preview + Functional Spec Details -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    
+    <!-- Left Column: Realistic Mobile Device Frame -->
+    <div class="lg:col-span-5 flex flex-col items-center justify-center">
+      <div class="iphone-frame bg-slate-900 border border-slate-800 flex flex-col">
+        
+        <!-- Dynamic Island & Status Bar -->
+        <div class="dynamic-island">
+          <div class="w-2.5 h-2.5 rounded-full bg-slate-900 border border-slate-700"></div>
+          <div class="w-2.5 h-2.5 rounded-full bg-emerald-500/80 pulse-dot"></div>
+        </div>
+        <div class="h-11 px-7 flex items-end justify-between text-[11px] font-semibold text-slate-400 pb-1 z-30 select-none">
+          <span>09:00</span>
+          <div class="flex items-center gap-1.5 text-[10px]">
+            <span>5G</span>
+            <span>100% 🔋</span>
+          </div>
+        </div>
+
+        <!-- Phone Content Area (Scrollable) -->
+        <div id="phone-screen" class="flex-1 overflow-y-auto custom-scroll p-4 text-xs pb-16 relative">
+          <!-- Active Screen Rendered Here By JS -->
+        </div>
+
+        <!-- Bottom Navigation Bar on Device -->
+        <div class="h-14 bg-slate-950/95 border-t border-slate-800/80 absolute bottom-0 left-0 right-0 flex items-center justify-around px-2 text-[10px] z-30 select-none">
+          <button onclick="setScreen('mission')" id="btn-tab-mission" class="flex flex-col items-center gap-0.5 text-blue-400">
+            <span class="text-base">⚡</span>
+            <span>Mission</span>
+          </button>
+          <button onclick="setScreen('feed')" id="btn-tab-feed" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200 relative">
+            <span class="text-base">⚠️</span>
+            <span>Queue</span>
+            <span class="absolute top-0 right-2 w-2 h-2 rounded-full bg-amber-400 pulse-dot"></span>
+          </button>
+          <button onclick="setScreen('history')" id="btn-tab-history" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200">
+            <span class="text-base">📋</span>
+            <span>Matches</span>
+          </button>
+          <button onclick="setScreen('vault')" id="btn-tab-settings" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200">
+            <span class="text-base">⚙️</span>
+            <span>Studio</span>
+          </button>
+        </div>
+
+      </div>
+
+      <div class="text-[11px] text-slate-500 mt-4 text-center">
+        Interactive Mobile Preview &bull; Click UI elements to test prototype flows
+      </div>
+    </div>
+
+    <!-- Right Column: Functional Specification & Figma Tokens -->
+    <div class="lg:col-span-7 space-y-6">
+      
+      <!-- Screen Specification Header Card -->
+      <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div>
+            <span id="spec-code" class="text-[11px] font-mono text-blue-400 font-bold uppercase">CAL-SCR-01</span>
+            <h2 id="spec-title" class="text-lg font-bold text-slate-100">App Unlock &amp; Customer Authentication</h2>
+          </div>
+          <span id="spec-status" class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            Required / Active
+          </span>
+        </div>
+
+        <p id="spec-desc" class="text-xs text-slate-300 leading-relaxed">
+          Provides customer login, biometric unlock, and HTTP-only JWT token management to ensure only the authorized candidate can configure credentials, view applications, or approve screening questions.
+        </p>
+
+        <!-- Acceptance Criteria Checklist -->
+        <div class="space-y-2 pt-2">
+          <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider">Functional Acceptance Criteria:</h3>
+          <ul id="spec-criteria" class="space-y-1.5 text-xs text-slate-400 list-disc list-inside">
+            <!-- Rendered by JS -->
+          </ul>
+        </div>
+      </div>
+
+      <!-- Quick Action / Interactive Trigger Box -->
+      <div class="p-5 rounded-2xl bg-blue-950/20 border border-blue-500/30 space-y-3">
+        <h3 class="text-xs font-bold text-blue-400 flex items-center gap-2">
+          <span>⚡</span> Try Interactive Screen Actions:
+        </h3>
+        <div id="interactive-actions" class="flex flex-wrap gap-2 text-xs">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Figma Tokens Reference Table -->
+      <div class="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
+        <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider">Associated Figma Design Tokens:</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
+          <div class="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
+            <span class="text-[10px] text-slate-500 block">Primary Action</span>
+            <span class="font-mono text-blue-400 font-semibold">bg-blue-600</span>
+          </div>
+          <div class="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
+            <span class="text-[10px] text-slate-500 block">Touch Target</span>
+            <span class="font-mono text-emerald-400 font-semibold">&ge; 48px × 48px</span>
+          </div>
+          <div class="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
+            <span class="text-[10px] text-slate-500 block">Card Corner Radius</span>
+            <span class="font-mono text-purple-400 font-semibold">20px (rounded-2xl)</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    // State management for prototype
+    let currentScreen = 'auth';
+    let isSignUpMode = false;
+    let applyThreshold = 70;
+    let skillsState = [
+      { name: 'Go (Golang)', exp: 6.0, year: 2026, level: 'expert', core: true, mult: '1.0x', color: 'emerald' },
+      { name: 'Kubernetes', exp: 5.0, year: 2026, level: 'expert', core: true, mult: '1.0x', color: 'emerald' },
+      { name: 'Kafka Streams', exp: 4.5, year: 2024, level: 'intermediate', core: false, mult: '0.8x', color: 'amber' },
+      { name: 'Cassandra', exp: 2.0, year: 2022, level: 'beginner', core: false, mult: '0.5x', color: 'rose' }
+    ];
+    let approvedQuestionsCount = 0;
+
+    const screenSpecs = {
+      auth: {
+        code: 'CAL-SCR-01',
+        title: 'Customer Authentication & Sign Up',
+        status: 'Required / Core',
+        desc: 'Protects the personal agent from unauthorized access. Supports both existing candidate login (with Face ID / Touch ID) and new candidate account registration (Sign Up) to initiate the 5-minute onboarding flow.',
+        criteria: [
+          'Master password entry with visibility toggle and bcrypt verification.',
+          'Candidate Sign Up flow allowing new account creation with username, email, and password confirmation.',
+          'Biometric Face ID / Touch ID quick unlock once master password is confirmed.',
+          'Secure HTTP-only JWT token with automated background refresh.',
+          'Seamless transition from Sign Up directly into Portal Provisioning (Step 1 of Onboarding).'
+        ],
+        actions: [
+          { label: 'Toggle Sign In / Sign Up View', action: 'toggleAuthMode()' },
+          { label: 'Simulate Login', action: "setScreen('mission')" },
+          { label: 'Simulate Face ID Unlock', action: "alert('Face ID Verified!'); setScreen('mission')" }
+        ]
+      },
+      vault: {
+        code: 'CAL-SCR-02',
+        title: 'Portal Provisioning & Encrypted Vault',
+        status: 'Security Critical',
+        desc: 'Allows the candidate to securely store credentials for target job portals (e.g. Naukri). All passwords are encrypted at rest using AES-256-GCM and only decrypted in-memory during active scans.',
+        criteria: [
+          'Multi-portal selector displaying active connection status badge (e.g. Naukri Active 🟢).',
+          'Password encryption with AES-256-GCM at rest before writing to SQLite.',
+          'Verify Login button to test credentials in a headless browser sandbox.',
+          'Session cookie validity tracker displaying last authenticated timestamp.'
+        ],
+        actions: [
+          { label: 'Test Login Connection', action: "alert('Headless browser verified portal credentials successfully!')" },
+          { label: 'Save Credentials', action: "alert('Encrypted with AES-256-GCM and saved to SQLite.')" }
+        ]
+      },
+      resume: {
+        code: 'CAL-SCR-03',
+        title: 'Resume Ingestion & Section Parser',
+        status: 'Grounding Source',
+        desc: 'Uploads and extracts structured text from PDF and DOCX files. Serves as the ground factual foundation for skill extraction and hallucination-free question answering.',
+        criteria: [
+          'Native document picker supporting PDF and DOCX files up to 10MB.',
+          'Text parser extracts work timeline, total years of exp, and skills.',
+          'Active resume card displaying upload timestamp and file metadata.',
+          'Replace Resume feature with automated 90-day archive retention.'
+        ],
+        actions: [
+          { label: 'Trigger Re-Parse', action: "alert('Resume parsed: 24 skills extracted, 11.2 years total exp detected.')" },
+          { label: 'Next: Review Skill Matrix', action: "setScreen('skills')" }
+        ]
+      },
+      skills: {
+        code: 'CAL-SCR-04',
+        title: 'Dynamic Skill Recency Matrix',
+        status: 'Core Matching Driver',
+        desc: 'Displays dynamically parsed skills with steppers for Years of Experience, Last Used Year, and selection dots for proficiency levels (Beginner, Intermediate, Expert). Enforces recency decay to stop accidental matching against legacy skills.',
+        criteria: [
+          'Proficiency level selection dots (Beginner, Intermediate, Expert) per skill.',
+          'Years of experience steppers with 0.5-year increment precision.',
+          'Last Used Year selector triggering instant recency multiplier calculation (1.0x, 0.8x, 0.5x).',
+          'Core skill star toggle to prioritize primary competencies.',
+          'Custom skill input button to manually add unlisted technologies.'
+        ],
+        actions: [
+          { label: 'Add Custom Skill', action: "addSkillPrompt()" },
+          { label: 'Save Verified Matrix', action: "alert('Skill matrix saved to SQLite.')" }
+        ]
+      },
+      qa: {
+        code: 'CAL-SCR-05',
+        title: 'Predefined Screening QA Profile',
+        status: 'Tier 1 Auto-Fill',
+        desc: 'Configures deterministic answers for standard recruiter questions (CTC, notice period, location) to enable instant 1-click applications without prompting the user.',
+        criteria: [
+          'Current and Expected CTC inputs in LPA with numeric validation.',
+          'Notice period dropdown with Serving Notice switch.',
+          'Preferred location tag chips and relocation willingness toggle.',
+          'Offer holding toggle with optional offer details.'
+        ],
+        actions: [
+          { label: 'Save Profile', action: "alert('Predefined QA profile updated.')" },
+          { label: 'Back to Mission Control', action: "setScreen('mission')" }
+        ]
+      },
+      mission: {
+        code: 'CAL-SCR-06',
+        title: 'Mission Control & Daily Run Monitor',
+        status: 'Daily Operations',
+        desc: 'Real-time dashboard displaying morning scan progress, daily pilot cap meter (3/5), configurable auto-apply percentage threshold tabs (≥60%, ≥70%, ≥80%, ≥85%), Gaussian delay timers, and anti-bot challenge circuit breaker state.',
+        criteria: [
+          'Configurable percentage tabs (≥60%, ≥70%, ≥80%, ≥85%) to auto-apply for all jobs matching greater than the defined score.',
+          'Next scheduled run countdown (Mon-Sat 09:00 AM).',
+          'Daily application cap meter preventing excessive submissions.',
+          'On-demand Run Now button with Dry-Run (score only) modal option.',
+          'Real-time Server-Sent Events (SSE) streaming live application logs.'
+        ],
+        actions: [
+          { label: 'Trigger Run Now (Live)', action: "alert('Autonomous morning scan initiated!')" },
+          { label: 'Test Dry-Run (Score Only)', action: "alert('Dry-run started: scoring jobs without applying.')" }
+        ]
+      },
+      feed: {
+        code: 'CAL-SCR-07',
+        title: 'Mobile Question Escalation Feed',
+        status: 'Tier 3 HITL Guardrail',
+        desc: 'Displays high-match jobs requiring candidate review for ambiguous or novel recruiter questions. Shows AI draft strictly grounded in resume facts with 1-tap approval.',
+        criteria: [
+          'Push notification triggers when recruiter asks novel technical question.',
+          'Question card displays job match score %, full question text, and AI draft.',
+          'Confidence score badge and resume citation source.',
+          '1-Tap Approve & Apply button writes to Question Memory cache.'
+        ],
+        actions: [
+          { label: 'Approve & Apply (1-Tap)', action: "approveQuestion()" },
+          { label: 'Skip Question', action: "alert('Job skipped. Moving to next listing.')" }
+        ]
+      },
+      history: {
+        code: 'CAL-SCR-08',
+        title: 'Application Audit & Match Radar',
+        status: 'Audit Trail',
+        desc: 'Comprehensive history of all evaluated listings with match scores, applied tier resolution, missing skill gap analysis, and direct portal links.',
+        criteria: [
+          'Filter tabs by All, Applied, and Skipped.',
+          'Score breakdown modal showing matched vs missing skills.',
+          'Tier source tagging (Tier 1 Predefined, Tier 2 LLM, Tier 3 User Approved).',
+          'External portal link to view original job posting.'
+        ],
+        actions: [
+          { label: 'Filter: Applied Only', action: "alert('Filtered to applied jobs.')" },
+          { label: 'Export Daily Digest', action: "alert('Markdown digest downloaded.')" }
+        ]
+      }
+    };
+
+    function setScreen(screenId) {
+      currentScreen = screenId;
+
+      // Update Nav Buttons
+      ['auth', 'vault', 'resume', 'skills', 'qa', 'mission', 'feed', 'history'].forEach(id => {
+        const btn = document.getElementById('nav-' + id);
+        if (btn) {
+          if (id === screenId) {
+            btn.className = 'px-3 py-1.5 rounded-lg bg-blue-600 text-white font-medium transition shadow-sm';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition';
+          }
+        }
+      });
+
+      // Update Specs Column
+      const spec = screenSpecs[screenId];
+      document.getElementById('spec-code').innerText = spec.code;
+      document.getElementById('spec-title').innerText = spec.title;
+      document.getElementById('spec-status').innerText = spec.status;
+      document.getElementById('spec-desc').innerText = spec.desc;
+
+      const criteriaList = document.getElementById('spec-criteria');
+      criteriaList.innerHTML = spec.criteria.map(c => `<li>${c}</li>`).join('');
+
+      const actionsDiv = document.getElementById('interactive-actions');
+      actionsDiv.innerHTML = spec.actions.map(a => 
+        `<button onclick="${a.action}" class="px-3 py-1.5 rounded-lg bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/30 font-medium transition">
+          ${a.label} &rarr;
+        </button>`
+      ).join('');
+
+      renderPhoneScreen(screenId);
+    }
+
+    function renderPhoneScreen(screenId) {
+      const container = document.getElementById('phone-screen');
+
+      if (screenId === 'auth') {
+        if (!isSignUpMode) {
+          container.innerHTML = `
+            <div class="flex flex-col items-center justify-center min-h-[580px] text-center space-y-5 pt-4">
+              <div class="w-16 h-16 rounded-3xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-3xl shadow-lg">
+                ⚡
+              </div>
+              <div>
+                <h2 class="text-xl font-bold text-slate-100">Welcome</h2>
+                <p class="text-[11px] text-slate-400 mt-1">Sign in to your autonomous agent</p>
+              </div>
+
+              <div class="w-full space-y-3 text-left">
+                <div>
+                  <label class="text-[11px] font-medium text-slate-300">Username or Email</label>
+                  <input type="text" value="candidate@domain.com" class="w-full mt-1 px-3 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-100 text-xs focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                  <label class="text-[11px] font-medium text-slate-300">Master Password</label>
+                  <input type="password" value="••••••••••••" class="w-full mt-1 px-3 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-100 text-xs focus:outline-none focus:border-blue-500">
+                </div>
+
+                <button onclick="setScreen('mission')" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg transition mt-1">
+                  Sign In
+                </button>
+                
+                <div class="pt-2 text-center">
+                  <span class="text-[11px] text-slate-400">New to Job Agent?</span>
+                  <button onclick="toggleAuthMode()" class="ml-1 text-[11px] font-bold text-blue-400 hover:text-blue-300 underline">
+                    Sign Up Now
+                  </button>
+                </div>
+              </div>
+
+              <div class="pt-3 border-t border-slate-800 w-full">
+                <button onclick="alert('Face ID Authenticated!'); setScreen('mission')" class="w-full py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs font-medium flex items-center justify-center gap-2 border border-slate-700">
+                  <span>👤</span> Quick Face ID Unlock
+                </button>
+              </div>
+            </div>
+          `;
+        } else {
+          container.innerHTML = `
+            <div class="flex flex-col items-center justify-center min-h-[580px] text-center space-y-4 pt-2">
+              <div class="w-14 h-14 rounded-3xl bg-emerald-600/20 border border-emerald-500/40 flex items-center justify-center text-2xl shadow-lg">
+                ✨
+              </div>
+              <div>
+                <h2 class="text-xl font-bold text-slate-100">Create Account</h2>
+                <p class="text-[11px] text-slate-400 mt-0.5">5-Minute Autonomous Onboarding</p>
+              </div>
+
+              <div class="w-full space-y-2.5 text-left">
+                <div>
+                  <label class="text-[10px] font-medium text-slate-300">Candidate Full Name</label>
+                  <input type="text" placeholder="e.g. Lead Engineer" class="w-full mt-0.5 px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-100 text-xs focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                  <label class="text-[10px] font-medium text-slate-300">Email Address</label>
+                  <input type="email" placeholder="candidate@domain.com" class="w-full mt-0.5 px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-100 text-xs focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                  <label class="text-[10px] font-medium text-slate-300">Master Password</label>
+                  <input type="password" placeholder="Create strong master key" class="w-full mt-0.5 px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-100 text-xs focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                  <label class="text-[10px] font-medium text-slate-300">Confirm Password</label>
+                  <input type="password" placeholder="Re-enter master password" class="w-full mt-0.5 px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-100 text-xs focus:outline-none focus:border-blue-500">
+                </div>
+
+                <button onclick="completeSignUp()" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg transition mt-2">
+                  Create Account &amp; Start Setup &rarr;
+                </button>
+                
+                <div class="pt-1 text-center">
+                  <span class="text-[11px] text-slate-400">Already registered?</span>
+                  <button onclick="toggleAuthMode()" class="ml-1 text-[11px] font-bold text-blue-400 hover:text-blue-300 underline">
+                    Sign In
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+      } 
+      else if (screenId === 'vault') {
+        container.innerHTML = `
+          <div class="space-y-4 pt-2">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <h2 class="text-sm font-bold text-slate-100">Portal Credentials Vault</h2>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">AES-256-GCM</span>
+            </div>
+
+            <!-- Portal Chips -->
+            <div class="flex gap-2">
+              <button class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-medium text-[11px]">Naukri (Active 🟢)</button>
+              <button class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 text-[11px]">Portal 2 (⚪)</button>
+              <button class="px-2 py-1.5 rounded-lg bg-slate-800 text-slate-400 text-[11px]">+</button>
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700/80 space-y-2 text-[11px]">
+              <span class="text-slate-400 block text-[10px]">Encryption Policy</span>
+              <p class="text-slate-300">Credentials are encrypted at rest using AES-256-GCM. Decrypted strictly in-memory during morning scans.</p>
+            </div>
+
+            <div class="space-y-3">
+              <div>
+                <label class="text-[11px] text-slate-300">Portal User ID / Email</label>
+                <input type="text" value="user@domain.com" class="w-full mt-1 px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-100 text-xs">
+              </div>
+              <div>
+                <label class="text-[11px] text-slate-300">Portal Password</label>
+                <input type="password" value="••••••••••••••" class="w-full mt-1 px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-100 text-xs">
+              </div>
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700 space-y-1">
+              <span class="text-[10px] text-slate-400">Session Cookie Health:</span>
+              <div class="text-emerald-400 font-semibold flex items-center gap-1 text-[11px]">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Active (Refreshed today 09:02 AM)
+              </div>
+            </div>
+
+            <div class="pt-2 flex gap-2">
+              <button onclick="alert('Connection Verified Successfully!')" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700">
+                Verify Login
+              </button>
+              <button onclick="alert('Saved to encrypted vault.')" class="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold">
+                Save Vault
+              </button>
+            </div>
+          </div>
+        `;
+      }
+      else if (screenId === 'resume') {
+        container.innerHTML = `
+          <div class="space-y-4 pt-2">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <h2 class="text-sm font-bold text-slate-100">Resume Ingestion Studio</h2>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-mono">Parsed</span>
+            </div>
+
+            <div class="p-4 rounded-xl bg-slate-800/70 border border-slate-700 space-y-2">
+              <div class="flex items-center gap-3">
+                <span class="text-2xl">📄</span>
+                <div>
+                  <div class="font-bold text-slate-100 text-xs">resume_staff_architect.pdf</div>
+                  <div class="text-[10px] text-slate-400">142 KB &bull; Uploaded 2 days ago</div>
+                </div>
+              </div>
+              <button onclick="alert('Select new PDF/DOCX file')" class="w-full mt-2 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 text-[11px] font-medium">
+                Replace Resume File
+              </button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-center">
+              <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-800">
+                <span class="text-slate-400 text-[10px] block">Total Experience</span>
+                <span class="font-bold text-emerald-400 text-sm">11.2 Years</span>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-800">
+                <span class="text-slate-400 text-[10px] block">Extracted Skills</span>
+                <span class="font-bold text-blue-400 text-sm">24 Discovered</span>
+              </div>
+            </div>
+
+            <div class="space-y-1.5 text-[11px]">
+              <span class="text-slate-400 font-semibold text-[10px] block">Chronological Timeline:</span>
+              <div class="p-2.5 rounded-lg bg-slate-800/30 border border-slate-800 text-slate-300">
+                <b>2022 – Present:</b> Lead Cloud Architect (Go, K8s, Kafka)
+              </div>
+              <div class="p-2.5 rounded-lg bg-slate-800/30 border border-slate-800 text-slate-300">
+                <b>2018 – 2022:</b> Senior Backend Engineer (Microservices, AWS)
+              </div>
+            </div>
+
+            <button onclick="setScreen('skills')" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-lg">
+              Open Dynamic Skill Matrix &rarr;
+            </button>
+          </div>
+        `;
+      }
+      else if (screenId === 'skills') {
+        container.innerHTML = `
+          <div class="space-y-3 pt-2">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <div>
+                <h2 class="text-sm font-bold text-slate-100">Dynamic Skill Matrix</h2>
+                <span class="text-[10px] text-slate-400">Configure Experience & Recency</span>
+              </div>
+              <button onclick="addSkillPrompt()" class="px-2 py-1 rounded bg-blue-600/20 text-blue-400 border border-blue-500/30 text-[10px] font-bold">+ Add</button>
+            </div>
+
+            <!-- Skill Cards -->
+            <div class="space-y-2">
+              ${skillsState.map((s, idx) => `
+                <div class="p-3 rounded-xl bg-slate-800/70 border border-slate-700/80 space-y-2">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-1.5 font-bold text-xs text-slate-100">
+                      <span class="${s.core ? 'text-amber-400' : 'text-slate-500'}">★</span>
+                      <span>${s.name}</span>
+                    </div>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-${s.color}-500/10 text-${s.color}-400 border border-${s.color}-500/20">
+                      ${s.mult} (${s.year >= 2025 ? 'Active' : s.year >= 2023 ? 'Recent' : 'Legacy'})
+                    </span>
+                  </div>
+
+                  <div class="flex items-center justify-between text-[11px] pt-1">
+                    <div class="flex items-center gap-2">
+                      <span class="text-slate-400">Exp:</span>
+                      <button onclick="adjustExp(${idx}, -0.5)" class="w-5 h-5 rounded bg-slate-700 hover:bg-slate-600 text-slate-200 flex items-center justify-center font-bold">-</button>
+                      <span class="font-bold text-slate-100 font-mono">${s.exp.toFixed(1)} yrs</span>
+                      <button onclick="adjustExp(${idx}, 0.5)" class="w-5 h-5 rounded bg-slate-700 hover:bg-slate-600 text-slate-200 flex items-center justify-center font-bold">+</button>
+                    </div>
+
+                    <div class="flex items-center gap-1">
+                      <span class="text-slate-400">Last:</span>
+                      <select onchange="updateYear(${idx}, this.value)" class="bg-slate-900 border border-slate-700 text-slate-200 rounded px-1.5 py-0.5 text-[10px]">
+                        <option value="2026" ${s.year === 2026 ? 'selected' : ''}>2026</option>
+                        <option value="2025" ${s.year === 2025 ? 'selected' : ''}>2025</option>
+                        <option value="2024" ${s.year === 2024 ? 'selected' : ''}>2024</option>
+                        <option value="2022" ${s.year === 2022 ? 'selected' : ''}>2022</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Proficiency Selection Dots (Beginner, Intermediate, Expert) -->
+                  <div class="flex items-center justify-between pt-1.5 border-t border-slate-700/60 text-[10px]">
+                    <span class="text-slate-400 font-medium">Level:</span>
+                    <div class="flex items-center gap-2.5">
+                      <label onclick="setLevel(${idx}, 'beginner')" class="flex items-center gap-1 cursor-pointer">
+                        <span class="w-2.5 h-2.5 rounded-full border transition flex items-center justify-center ${s.level === 'beginner' ? 'bg-sky-400 border-sky-400 ring-2 ring-sky-400/30' : 'border-slate-600 bg-slate-900'}"></span>
+                        <span class="${s.level === 'beginner' ? 'text-sky-300 font-bold' : 'text-slate-400'}">Beginner</span>
+                      </label>
+                      <label onclick="setLevel(${idx}, 'intermediate')" class="flex items-center gap-1 cursor-pointer">
+                        <span class="w-2.5 h-2.5 rounded-full border transition flex items-center justify-center ${s.level === 'intermediate' ? 'bg-amber-400 border-amber-400 ring-2 ring-amber-400/30' : 'border-slate-600 bg-slate-900'}"></span>
+                        <span class="${s.level === 'intermediate' ? 'text-amber-300 font-bold' : 'text-slate-400'}">Intermediate</span>
+                      </label>
+                      <label onclick="setLevel(${idx}, 'expert')" class="flex items-center gap-1 cursor-pointer">
+                        <span class="w-2.5 h-2.5 rounded-full border transition flex items-center justify-center ${s.level === 'expert' ? 'bg-emerald-400 border-emerald-400 ring-2 ring-emerald-400/30' : 'border-slate-600 bg-slate-900'}"></span>
+                        <span class="${s.level === 'expert' ? 'text-emerald-300 font-bold' : 'text-slate-400'}">Expert</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <button onclick="alert('Skill recency weights updated in SQLite database.')" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold">
+              Save Verified Skill Matrix
+            </button>
+          </div>
+        `;
+      }
+      else if (screenId === 'qa') {
+        container.innerHTML = `
+          <div class="space-y-3.5 pt-2">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <h2 class="text-sm font-bold text-slate-100">Screening QA Profile</h2>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-mono">Tier 1</span>
+            </div>
+
+            <p class="text-[11px] text-slate-400">Standard questions auto-fill using these pre-configured values without invoking AI.</p>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-[10px] text-slate-300">Current CTC (LPA)</label>
+                <input type="text" value="35.0" class="w-full mt-1 px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-100 text-xs">
+              </div>
+              <div>
+                <label class="text-[10px] text-slate-300">Expected CTC (LPA)</label>
+                <input type="text" value="45.0" class="w-full mt-1 px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-100 text-xs">
+              </div>
+            </div>
+
+            <div>
+              <label class="text-[10px] text-slate-300">Notice Period</label>
+              <select class="w-full mt-1 px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-100 text-xs">
+                <option>30 Days (Standard)</option>
+                <option>Immediate / 15 Days</option>
+                <option>60 Days</option>
+                <option>90 Days</option>
+              </select>
+            </div>
+
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-800/60 border border-slate-700">
+              <span class="text-[11px] text-slate-300">Currently Serving Notice?</span>
+              <input type="checkbox" class="w-4 h-4 rounded text-blue-600 bg-slate-900 border-slate-700">
+            </div>
+
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-800/60 border border-slate-700">
+              <span class="text-[11px] text-slate-300">Willing to Relocate?</span>
+              <input type="checkbox" checked class="w-4 h-4 rounded text-blue-600 bg-slate-900 border-slate-700">
+            </div>
+
+            <div>
+              <label class="text-[10px] text-slate-300 block mb-1">Preferred Locations:</label>
+              <div class="flex flex-wrap gap-1.5">
+                <span class="px-2 py-1 rounded-md bg-blue-600/20 text-blue-300 border border-blue-500/30 text-[10px]">Bangalore ✕</span>
+                <span class="px-2 py-1 rounded-md bg-blue-600/20 text-blue-300 border border-blue-500/30 text-[10px]">Remote ✕</span>
+                <span class="px-2 py-1 rounded-md bg-blue-600/20 text-blue-300 border border-blue-500/30 text-[10px]">Hyderabad ✕</span>
+              </div>
+            </div>
+
+            <button onclick="alert('Screening profile saved.')" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold mt-2">
+              Save Screening Profile
+            </button>
+          </div>
+        `;
+      }
+      else if (screenId === 'mission') {
+        container.innerHTML = `
+          <div class="space-y-4 pt-2">
+            <!-- Header Status -->
+            <div class="flex items-center justify-between bg-slate-800/80 p-3 rounded-2xl border border-slate-700">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 pulse-dot"></span>
+                <div>
+                  <div class="font-bold text-xs text-slate-100">Daily Agent Running</div>
+                  <div class="text-[10px] text-slate-400">Next auto-scan: Tomorrow 09:00 AM</div>
+                </div>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">ACTIVE</span>
+            </div>
+
+            <!-- Daily Cap Meter -->
+            <div class="p-3.5 rounded-2xl bg-slate-800/50 border border-slate-700 space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-semibold text-slate-300">Daily Pilot Cap</span>
+                <span class="font-mono font-bold text-blue-400">${3 + approvedQuestionsCount} / 5 Applied</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-slate-700 overflow-hidden">
+                <div class="h-full bg-blue-500 rounded-full" style="width: ${(3 + approvedQuestionsCount) * 20}%"></div>
+              </div>
+              <div class="text-[10px] text-slate-400">Pacing: 8s–25s Gaussian randomized human delay active</div>
+            </div>
+
+            <!-- Auto-Apply Threshold Percentage Filter Tabs -->
+            <div class="p-3 rounded-2xl bg-slate-800/60 border border-slate-700 space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-semibold text-slate-200">Auto-Apply Match Gate</span>
+                <span class="font-mono font-bold text-emerald-400">&ge; ${applyThreshold}%</span>
+              </div>
+              <p class="text-[10px] text-slate-400 leading-tight">
+                Automatically submit applications for all discovered jobs with match score greater than:
+              </p>
+              
+              <!-- Percentage Selection Tabs -->
+              <div class="grid grid-cols-4 gap-1.5 pt-1 text-[11px]">
+                ${[60, 70, 80, 85].map(pct => `
+                  <button onclick="setApplyThreshold(${pct})" class="py-1.5 rounded-xl font-bold transition flex flex-col items-center justify-center ${applyThreshold === pct ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-900/80 text-slate-400 hover:text-slate-200 border border-slate-800'}">
+                    <span>&ge; ${pct}%</span>
+                  </button>
+                `).join('')}
+              </div>
+
+              <div class="text-[10px] text-slate-400 flex items-center justify-between pt-0.5 border-t border-slate-700/40">
+                <span>Qualifying jobs today:</span>
+                <span class="text-blue-400 font-semibold font-mono">${applyThreshold <= 60 ? '6 jobs qualify' : applyThreshold <= 70 ? '4 jobs qualify' : applyThreshold <= 80 ? '3 jobs qualify' : '1 job qualifies'}</span>
+              </div>
+            </div>
+
+            <!-- Pending Action Alert Box -->
+            <div onclick="setScreen('feed')" class="cursor-pointer p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between hover:bg-amber-500/20 transition">
+              <div class="flex items-center gap-2.5">
+                <span class="text-xl">⚠️</span>
+                <div>
+                  <div class="font-bold text-xs text-amber-300">1 Recruiter Question Pending</div>
+                  <div class="text-[10px] text-amber-400/80">Staff Architect (92% Match) needs approval</div>
+                </div>
+              </div>
+              <span class="text-amber-400 font-bold text-xs">&rarr;</span>
+            </div>
+
+            <!-- Live Event Stream Feed -->
+            <div class="space-y-1.5">
+              <span class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Live Scan Feed (SSE):</span>
+              <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 font-mono text-[10px] space-y-1 text-slate-400">
+                <div class="text-slate-300">[09:05:12] Found 14 fresh postings</div>
+                <div class="text-emerald-400">[09:05:40] Lead SRE (84% Match) &rarr; Auto-Applied (T1)</div>
+                <div class="text-amber-400">[09:06:05] Staff Arch (92% Match) &rarr; Pushed to Queue (T3)</div>
+              </div>
+            </div>
+
+            <!-- Run Now Trigger -->
+            <div class="flex gap-2 pt-1">
+              <button onclick="alert('On-demand scan triggered!')" class="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg">
+                ⚡ Run Scan Now
+              </button>
+              <button onclick="alert('Dry run mode: scores listings without applying.')" class="px-3 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs border border-slate-700">
+                Dry-Run
+              </button>
+            </div>
+          </div>
+        `;
+      }
+      else if (screenId === 'feed') {
+        container.innerHTML = `
+          <div class="space-y-4 pt-2">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <h2 class="text-sm font-bold text-slate-100">Question Escalation Feed</h2>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 font-mono">1 Pending</span>
+            </div>
+
+            <!-- High Match Job Context -->
+            <div class="p-4 rounded-2xl bg-slate-800/80 border border-slate-700 space-y-3">
+              <div class="flex items-start justify-between">
+                <div>
+                  <div class="font-bold text-xs text-slate-100">Staff Cloud Architect</div>
+                  <div class="text-[11px] text-slate-400">FinTech ScaleUp &bull; Bangalore / Hybrid</div>
+                </div>
+                <span class="px-2 py-1 rounded-full text-[10px] font-bold font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  92% Match
+                </span>
+              </div>
+
+              <!-- Recruiter Question -->
+              <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
+                <span class="text-[10px] text-amber-400 font-semibold block uppercase tracking-wider">Recruiter Screening Question:</span>
+                <p class="text-xs text-slate-200 font-medium">"Describe your hands-on production experience designing Kafka event streams?"</p>
+              </div>
+
+              <!-- AI Drafted Answer -->
+              <div class="space-y-1">
+                <div class="flex items-center justify-between text-[10px]">
+                  <span class="text-slate-400">✨ AI Suggestion (From Resume Facts):</span>
+                  <span class="text-blue-400 font-mono">Confidence: 74%</span>
+                </div>
+                <textarea id="feed-answer" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs focus:outline-none focus:border-blue-500" rows="3">Designed and maintained Kafka event streaming pipelines handling 50k events/sec in Go microservices at ScaleUp Corp (2022-2024).</textarea>
+                <div class="text-[10px] text-slate-500 italic">Citation: Section 4 "Key Architectural Projects" in resume.</div>
+              </div>
+
+              <div class="flex items-center gap-2 pt-1">
+                <input type="checkbox" id="chk-mem" checked class="w-3.5 h-3.5 rounded text-blue-600 bg-slate-900 border-slate-700">
+                <label for="chk-mem" class="text-[10px] text-slate-300">Remember this answer for future similar questions</label>
+              </div>
+
+              <!-- 1-Tap Action Buttons -->
+              <div class="flex flex-col gap-2 pt-2">
+                <button onclick="approveQuestion()" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-2">
+                  <span>✅</span> Approve &amp; Apply Now
+                </button>
+                <button onclick="alert('Job skipped.'); setScreen('mission')" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs font-medium">
+                  Skip This Job
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      else if (screenId === 'history') {
+        container.innerHTML = `
+          <div class="space-y-3 pt-2">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <h2 class="text-sm font-bold text-slate-100">Application Audit Trail</h2>
+              <span class="text-[10px] text-slate-400 font-mono">3 Applied</span>
+            </div>
+
+            <!-- Filter Chips -->
+            <div class="flex gap-1.5 text-[10px]">
+              <span class="px-2.5 py-1 rounded-md bg-blue-600 text-white font-medium">All (6)</span>
+              <span class="px-2.5 py-1 rounded-md bg-slate-800 text-slate-300">Applied (3)</span>
+              <span class="px-2.5 py-1 rounded-md bg-slate-800 text-slate-300">Skipped (3)</span>
+            </div>
+
+            <div class="space-y-2">
+              <!-- Item 1 -->
+              <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700/80 space-y-1.5">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <div class="font-bold text-xs text-slate-100">Staff Cloud Architect</div>
+                    <div class="text-[10px] text-slate-400">FinTech ScaleUp &bull; Today 09:05 AM</div>
+                  </div>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">92%</span>
+                </div>
+                <div class="flex items-center justify-between text-[10px] pt-1 text-slate-400">
+                  <span>Tier 3 (User Approved)</span>
+                  <a href="#" onclick="alert('Viewing original portal URL in mobile browser')" class="text-blue-400 hover:underline">View Portal &rarr;</a>
+                </div>
+              </div>
+
+              <!-- Item 2 -->
+              <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700/80 space-y-1.5">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <div class="font-bold text-xs text-slate-100">Lead SRE Engineer</div>
+                    <div class="text-[10px] text-slate-400">CloudSaaS Global &bull; Today 09:02 AM</div>
+                  </div>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">84%</span>
+                </div>
+                <div class="flex items-center justify-between text-[10px] pt-1 text-slate-400">
+                  <span>Tier 1 (Auto-filled CTC/Notice)</span>
+                  <a href="#" onclick="alert('Viewing original portal URL in mobile browser')" class="text-blue-400 hover:underline">View Portal &rarr;</a>
+                </div>
+              </div>
+
+              <!-- Item 3 (Skipped) -->
+              <div class="p-3 rounded-xl bg-slate-800/30 border border-slate-800/80 space-y-1.5 opacity-70">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <div class="font-bold text-xs text-slate-200">Full Stack Lead</div>
+                    <div class="text-[10px] text-slate-500">Legacy Agency &bull; Today 09:01 AM</div>
+                  </div>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-slate-700 text-slate-400">48%</span>
+                </div>
+                <div class="text-[10px] text-rose-400/80">Filtered: Low skill match score (&lt; 70%)</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function adjustExp(idx, delta) {
+      skillsState[idx].exp = Math.max(0.5, skillsState[idx].exp + delta);
+      renderPhoneScreen('skills');
+    }
+
+    function updateYear(idx, val) {
+      const year = parseInt(val);
+      skillsState[idx].year = year;
+      if (year >= 2025) {
+        skillsState[idx].mult = '1.0x';
+        skillsState[idx].color = 'emerald';
+      } else if (year >= 2023) {
+        skillsState[idx].mult = '0.8x';
+        skillsState[idx].color = 'amber';
+      } else {
+        skillsState[idx].mult = '0.5x';
+        skillsState[idx].color = 'rose';
+      }
+      renderPhoneScreen('skills');
+    }
+
+    function addSkillPrompt() {
+      const name = prompt("Enter missing skill name (e.g. Terraform, Rust, PostgreSQL):");
+      if (name) {
+        skillsState.push({ name: name, exp: 3.0, year: 2026, core: false, mult: '1.0x', color: 'emerald' });
+        renderPhoneScreen('skills');
+      }
+    }
+
+    function approveQuestion() {
+      approvedQuestionsCount = 1;
+      alert('🎉 1-Tap Approval Confirmed!\n\n1. Answer injected into job application form.\n2. Application successfully submitted.\n3. Q&A pair stored permanently in SQLite Question Memory (Hash cached).');
+      setScreen('mission');
+    }
+
+    function setLevel(idx, level) {
+      skillsState[idx].level = level;
+      renderPhoneScreen('skills');
+    }
+
+    function setApplyThreshold(pct) {
+      applyThreshold = pct;
+      renderPhoneScreen('mission');
+    }
+
+    function toggleAuthMode() {
+      isSignUpMode = !isSignUpMode;
+      renderPhoneScreen('auth');
+    }
+
+    function completeSignUp() {
+      alert('🎉 Account created successfully!\n\nMaster password hashed with bcrypt and persisted in SQLite.\n\nNow proceeding to Onboarding Step 1: Portal Vault Setup.');
+      isSignUpMode = false;
+      setScreen('vault');
+    }
+
+    // Initialize prototype with auth screen
+    setScreen('auth');
+  </script>
+</body>
+</html>

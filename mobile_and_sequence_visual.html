@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Layman Mobile UI & Backend Sequence Visualizer</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    .phone-frame {
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 12px #1f2937, 0 0 0 14px #374151;
+      border-radius: 40px;
+    }
+    .pulse-dot {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.15); }
+    }
+    .seq-step {
+      transition: all 0.2s ease;
+    }
+    .seq-step:hover {
+      transform: translateX(4px);
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-6 min-h-screen">
+
+  <!-- Header -->
+  <header class="max-w-6xl mx-auto mb-8 border-b border-[var(--border)] pb-6">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 mb-2">
+          <span>Layman &amp; Architectural Guide</span>
+          <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          <span>Mobile UI &bull; Backend Sequence</span>
+        </div>
+        <h1 class="text-2xl font-bold tracking-tight text-[var(--foreground)]">Mobile Experience &amp; Backend Sequence</h1>
+        <p class="text-sm text-[var(--muted-foreground)] mt-1">
+          A plain-English walkthrough of how the candidate controls the agent from a phone, and what happens under the hood.
+        </p>
+      </div>
+
+      <!-- Quick Nav -->
+      <div class="flex items-center gap-2 bg-[var(--card)] border border-[var(--border)] rounded-xl p-1.5 text-xs font-medium">
+        <button onclick="switchView('layman')" id="btn-layman" class="px-4 py-2 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] shadow-sm transition">
+          1. Mobile UI &amp; Layman Journey
+        </button>
+        <button onclick="switchView('sequence')" id="btn-sequence" class="px-4 py-2 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition">
+          2. Technical Sequence Diagram
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto">
+
+    <!-- VIEW 1: LAYMAN & MOBILE UI -->
+    <section id="view-layman" class="space-y-8">
+
+      <!-- 4-Step Plain English Summary Cards -->
+      <div>
+        <h2 class="text-base font-bold text-[var(--foreground)] mb-3">How It Works in 30 Seconds (The Morning Routine)</h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
+          
+          <div class="p-4 rounded-xl border border-[var(--border)] bg-[var(--card)]">
+            <div class="w-7 h-7 rounded-full bg-blue-500/10 text-blue-500 font-bold flex items-center justify-center mb-2">1</div>
+            <div class="font-bold text-[var(--foreground)]">09:00 AM: Background Wakeup</div>
+            <p class="text-[var(--muted-foreground)] mt-1">Your computer wakes up, scans new job postings, and checks skills against your resume.</p>
+          </div>
+
+          <div class="p-4 rounded-xl border border-[var(--border)] bg-[var(--card)]">
+            <div class="w-7 h-7 rounded-full bg-emerald-500/10 text-emerald-500 font-bold flex items-center justify-center mb-2">2</div>
+            <div class="font-bold text-[var(--foreground)]">Auto-Applies to Easy Roles</div>
+            <p class="text-[var(--muted-foreground)] mt-1">Standard jobs (and standard CTC/notice period forms) are filled and applied automatically.</p>
+          </div>
+
+          <div class="p-4 rounded-xl border border-[var(--border)] bg-[var(--card)]">
+            <div class="w-7 h-7 rounded-full bg-amber-500/10 text-amber-500 font-bold flex items-center justify-center mb-2">3</div>
+            <div class="font-bold text-[var(--foreground)]">Phone Alert for New Questions</div>
+            <p class="text-[var(--muted-foreground)] mt-1">If a recruiter asks an unusual question, your phone gets an alert with an AI-suggested answer.</p>
+          </div>
+
+          <div class="p-4 rounded-xl border border-[var(--border)] bg-[var(--card)]">
+            <div class="w-7 h-7 rounded-full bg-purple-500/10 text-purple-500 font-bold flex items-center justify-center mb-2">4</div>
+            <div class="font-bold text-[var(--foreground)]">1-Tap "Approve &amp; Remember"</div>
+            <p class="text-[var(--muted-foreground)] mt-1">You tap Approve on your phone. The agent submits the job and remembers the answer forever.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Interactive Smartphone Mockup Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pt-4">
+        
+        <!-- Left 5 Cols: Smartphone Screen Mockup -->
+        <div class="lg:col-span-5 flex justify-center">
+          <div class="phone-frame w-[340px] h-[640px] bg-slate-900 text-slate-100 flex flex-col overflow-hidden relative border-4 border-slate-800">
+            
+            <!-- Phone Notch & Status Bar -->
+            <div class="h-8 bg-slate-950 flex items-center justify-between px-6 text-[11px] text-slate-400 select-none">
+              <span>09:05</span>
+              <div class="w-20 h-4 bg-slate-800 rounded-full mx-auto"></div>
+              <span>5G 100%</span>
+            </div>
+
+            <!-- Dynamic Mobile Screen Content -->
+            <div class="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-900" id="phone-screen">
+              
+              <!-- Screen 1: Dashboard View (Default) -->
+              <div id="screen-dashboard" class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h3 class="font-bold text-sm text-white">Job Agent Control</h3>
+                    <p class="text-[11px] text-slate-400">Status: Running morning scan</p>
+                  </div>
+                  <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span>
+                    ACTIVE
+                  </span>
+                </div>
+
+                <!-- Daily Progress Card -->
+                <div class="p-3.5 rounded-2xl bg-slate-800/80 border border-slate-700/60 space-y-2">
+                  <div class="flex justify-between text-xs">
+                    <span class="text-slate-400">Daily Cap Progress</span>
+                    <span class="font-bold text-white">3 / 5 applied</span>
+                  </div>
+                  <div class="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-blue-500 to-emerald-400 w-3/5 rounded-full"></div>
+                  </div>
+                  <div class="text-[11px] text-slate-400 flex justify-between pt-1">
+                    <span>Next scan: Complete</span>
+                    <span class="text-amber-400 font-semibold">1 Action Needed &rarr;</span>
+                  </div>
+                </div>
+
+                <!-- Action Needed Push Card -->
+                <div onclick="showMobileScreen('approval')" class="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 cursor-pointer hover:bg-amber-500/20 transition space-y-1.5">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-bold text-amber-400 uppercase tracking-wide">&#9888; Action Required</span>
+                    <span class="text-[10px] text-slate-400">1m ago</span>
+                  </div>
+                  <div class="text-xs font-bold text-white">Staff Cloud Architect (Match: 86%)</div>
+                  <div class="text-[11px] text-slate-300">Recruiter asks: <i>"Years in multi-region Kafka?"</i></div>
+                  <div class="text-[11px] text-blue-400 font-medium pt-1">Tap to review AI suggested answer &rarr;</div>
+                </div>
+
+                <!-- Recent Auto-Applications List -->
+                <div class="space-y-1.5 pt-1">
+                  <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Applied This Morning</div>
+                  
+                  <div class="p-2.5 rounded-xl bg-slate-800/50 border border-slate-700/40 flex items-center justify-between text-xs">
+                    <div>
+                      <div class="font-semibold text-white">Lead Go Engineer</div>
+                      <div class="text-[11px] text-slate-400">FinTech Scaleup &bull; Bangalore</div>
+                    </div>
+                    <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-bold">92% Match</span>
+                  </div>
+
+                  <div class="p-2.5 rounded-xl bg-slate-800/50 border border-slate-700/40 flex items-center justify-between text-xs">
+                    <div>
+                      <div class="font-semibold text-white">Senior Distributed Systems</div>
+                      <div class="text-[11px] text-slate-400">Cloud Services &bull; Remote</div>
+                    </div>
+                    <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-bold">81% Match</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Screen 2: 1-Tap Question Review & Approval -->
+              <div id="screen-approval" class="hidden space-y-3">
+                <button onclick="showMobileScreen('dashboard')" class="text-xs text-blue-400 flex items-center gap-1 mb-1">
+                  &larr; Back to Dashboard
+                </button>
+
+                <div class="p-3.5 rounded-2xl bg-slate-800 border border-slate-700 space-y-2">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <h4 class="font-bold text-sm text-white">Staff Cloud Architect</h4>
+                      <p class="text-[11px] text-slate-400">Tier-1 Tech Firm &bull; Bangalore</p>
+                    </div>
+                    <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[11px] font-bold">86% Match</span>
+                  </div>
+
+                  <div class="pt-2 border-t border-slate-700/60">
+                    <div class="text-[11px] font-semibold text-amber-400">Recruiter Question:</div>
+                    <div class="text-xs text-slate-200 mt-0.5">"Have you managed production Kafka clusters across multiple cloud regions?"</div>
+                  </div>
+
+                  <div class="pt-2 border-t border-slate-700/60 bg-blue-500/5 p-2 rounded-xl border border-blue-500/20">
+                    <div class="text-[10px] font-semibold text-blue-400 flex items-center gap-1">
+                      <span>&#10024; AI Draft (Grounded in your resume)</span>
+                    </div>
+                    <div class="text-xs text-slate-200 mt-1 italic">
+                      "Yes, 5 years architecting distributed event pipelines on AWS using MSK and Strimzi Kafka across US and APAC regions."
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Approval Actions -->
+                <div class="space-y-2 pt-2">
+                  <button onclick="simulateMobileSubmit()" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg shadow-emerald-900/30 transition flex items-center justify-center gap-1.5">
+                    <span>&#10003; Approve &amp; Apply Now</span>
+                  </button>
+                  <button onclick="showMobileScreen('dashboard')" class="w-full py-2.5 rounded-xl bg-slate-800 text-slate-300 font-semibold text-xs border border-slate-700 hover:bg-slate-700 transition">
+                    Skip This Job
+                  </button>
+                </div>
+
+                <div class="text-[10px] text-center text-slate-400 pt-1">
+                  This answer will be remembered so you won't be asked again.
+                </div>
+              </div>
+
+              <!-- Screen 3: Submission Confirmed -->
+              <div id="screen-success" class="hidden text-center py-12 space-y-4">
+                <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto text-xl font-bold">
+                  &#10003;
+                </div>
+                <div>
+                  <h4 class="font-bold text-base text-white">Application Submitted!</h4>
+                  <p class="text-xs text-slate-400 mt-1">Answer saved to Question Memory Cache.</p>
+                </div>
+                <div class="pt-4">
+                  <button onclick="showMobileScreen('dashboard')" class="px-4 py-2 rounded-xl bg-slate-800 text-xs text-blue-400 border border-slate-700">
+                    Return to Dashboard
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Phone Bottom Navigation Bar -->
+            <div class="h-12 bg-slate-950 border-t border-slate-800/80 flex items-center justify-around text-xs text-slate-400">
+              <span class="text-blue-400 font-bold">&#9881; Runs</span>
+              <span>&#128196; Matches</span>
+              <span>&#9888; Queue</span>
+              <span>&#9881; Profile</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Right 7 Cols: Explanations & Mobile Capabilities -->
+        <div class="lg:col-span-7 space-y-4">
+          <div class="p-5 rounded-2xl bg-[var(--card)] border border-[var(--border)] space-y-3">
+            <h3 class="text-sm font-bold text-[var(--foreground)] flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+              Why the Mobile UI Solves the "Stalled Bot" Problem
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] leading-relaxed">
+              Traditional job bots run invisibly in terminal windows. When a job portal asks a new question (e.g. <i>"Notice period if serving?"</i> or <i>"Do you know gRPC?"</i>), typical bots either crash, guess wildly (hallucination), or skip the job completely.
+            </p>
+            <p class="text-xs text-[var(--muted-foreground)] leading-relaxed">
+              With this agent, your computer sends an interactive prompt to your phone. The LLM extracts the exact answer from your resume, and you simply tap <b>"Approve"</b> during your morning coffee.
+            </p>
+
+            <div class="mt-4 pt-4 border-t border-[var(--border)] grid grid-cols-2 gap-3 text-xs">
+              <div class="p-3 bg-[var(--background)] rounded-xl border border-[var(--border)]">
+                <div class="font-bold text-[var(--foreground)]">Mobile Web Access</div>
+                <div class="text-[var(--muted-foreground)] text-[12px] mt-0.5">Access dashboard on your local Wi-Fi or via secure Tailscale VPN on your phone.</div>
+              </div>
+              <div class="p-3 bg-[var(--background)] rounded-xl border border-[var(--border)]">
+                <div class="font-bold text-[var(--foreground)]">Zero Repetition Memory</div>
+                <div class="text-[var(--muted-foreground)] text-[12px] mt-0.5">Answer once on your phone; the agent caches it in SQLite for all future applications.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Guide Trigger -->
+          <div class="p-4 rounded-xl border border-blue-500/30 bg-blue-500/5 text-xs flex items-center justify-between">
+            <span class="text-blue-600 font-medium">Try tapping the yellow alert on the phone screen to test the mobile approval flow!</span>
+            <button onclick="showMobileScreen('approval')" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold">
+              Test Action &rarr;
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- VIEW 2: TECHNICAL BACKEND SEQUENCE DIAGRAM -->
+    <section id="view-sequence" class="hidden space-y-6">
+      <div class="p-6 rounded-2xl bg-[var(--card)] border border-[var(--border)] shadow-sm space-y-6">
+        <div>
+          <h2 class="text-lg font-bold text-[var(--foreground)]">Complete End-to-End Backend Sequence Flow</h2>
+          <p class="text-xs text-[var(--muted-foreground)] mt-1">
+            Exact trace of execution across Mobile Client, Go HTTP/SSE Gateway, Playwright Browser, LLM Reasoner, and SQLite.
+          </p>
+        </div>
+
+        <!-- Visual Step-by-Step Sequence Timeline -->
+        <div class="space-y-3 font-mono text-xs">
+          
+          <div class="seq-step p-3.5 rounded-xl bg-[var(--background)] border border-[var(--border)] flex items-start gap-4">
+            <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-500 font-bold">01</span>
+            <div class="flex-1">
+              <div class="font-bold text-[var(--foreground)]">Cron Scheduler Fires (09:00 Mon-Sat)</div>
+              <div class="text-[var(--muted-foreground)] font-sans text-[12px] mt-0.5">
+                Go scheduler launches <code>crawler.RunDailySession()</code>. Loads <code>portal_cookies.json</code> via <code>go-secrets-file-mounted</code> and boots stealth Playwright browser.
+              </div>
+            </div>
+          </div>
+
+          <div class="seq-step p-3.5 rounded-xl bg-[var(--background)] border border-[var(--border)] flex items-start gap-4">
+            <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-500 font-bold">02</span>
+            <div class="flex-1">
+              <div class="font-bold text-[var(--foreground)]">Listing Ingestion &amp; 70% Skill Matcher</div>
+              <div class="text-[var(--muted-foreground)] font-sans text-[12px] mt-0.5">
+                Crawler queries saved searches. Deduplicates against SQLite (60-day window). Computes weighted score: $S = \frac{1.0 \times M_R + 0.3 \times M_P}{1.0 \times R + 0.3 \times P}$. Drops non-qualifying jobs ($S &lt; 0.70$).
+              </div>
+            </div>
+          </div>
+
+          <div class="seq-step p-3.5 rounded-xl bg-[var(--background)] border border-[var(--border)] flex items-start gap-4">
+            <span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-500 font-bold">03</span>
+            <div class="flex-1">
+              <div class="font-bold text-[var(--foreground)]">Questionnaire Encountered &rarr; 3-Tier Resolution</div>
+              <div class="text-[var(--muted-foreground)] font-sans text-[12px] mt-0.5">
+                DOM form inputs detected. <b>Tier 1:</b> Auto-fills CTC &amp; notice period. <b>Tier 2:</b> Unmatched questions routed to LLM with candidate resume context.
+              </div>
+            </div>
+          </div>
+
+          <div class="seq-step p-3.5 rounded-xl bg-[var(--background)] border border-[var(--border)] flex items-start gap-4">
+            <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-500 font-bold">04</span>
+            <div class="flex-1">
+              <div class="font-bold text-[var(--foreground)]">Human Escalation via SSE Stream (Tier 3)</div>
+              <div class="text-[var(--muted-foreground)] font-sans text-[12px] mt-0.5">
+                If question confidence &lt; 85%, Go backend broadcasts <code>AWAITING_USER_INPUT</code> over Server-Sent Events (SSE). Mobile UI displays the interactive card.
+              </div>
+            </div>
+          </div>
+
+          <div class="seq-step p-3.5 rounded-xl bg-[var(--background)] border border-[var(--border)] flex items-start gap-4">
+            <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-500 font-bold">05</span>
+            <div class="flex-1">
+              <div class="font-bold text-[var(--foreground)]">Mobile User Approval &amp; Final Apply</div>
+              <div class="text-[var(--muted-foreground)] font-sans text-[12px] mt-0.5">
+                Candidate taps "Approve" &rarr; <code>POST /api/v1/queue/:id/approve</code>. Crawler injects answer, waits Gaussian delay (8-25s), clicks Submit, and records entry to SQLite.
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    function switchView(view) {
+      if (view === 'layman') {
+        document.getElementById('view-layman').classList.remove('hidden');
+        document.getElementById('view-sequence').classList.add('hidden');
+        document.getElementById('btn-layman').className = 'px-4 py-2 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] shadow-sm transition';
+        document.getElementById('btn-sequence').className = 'px-4 py-2 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition';
+      } else {
+        document.getElementById('view-layman').classList.add('hidden');
+        document.getElementById('view-sequence').classList.remove('hidden');
+        document.getElementById('btn-sequence').className = 'px-4 py-2 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] shadow-sm transition';
+        document.getElementById('btn-layman').className = 'px-4 py-2 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition';
+      }
+    }
+
+    function showMobileScreen(screen) {
+      document.getElementById('screen-dashboard').classList.add('hidden');
+      document.getElementById('screen-approval').classList.add('hidden');
+      document.getElementById('screen-success').classList.add('hidden');
+      document.getElementById('screen-' + screen).classList.remove('hidden');
+    }
+
+    function simulateMobileSubmit() {
+      showMobileScreen('success');
+    }
+  </script>
+</body>
+</html>
