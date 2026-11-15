@@ -1,9 +1,9 @@
-# Candidate Access Layer (Mobile App): Functional Requirements Document
+# Candidate Access Layer (Mobile & Desktop): Functional Requirements Document
 
 - **Component**: Layer 1 — Candidate Access Layer (`ui/`)
 - **System**: Autonomous Job-Matching Agent & Application Proxy
-- **Target Platform**: Installed Mobile App (Mobile-First Responsive PWA / Hybrid App: iOS & Android)
-- **Document Version**: 1.0.0
+- **Target Platform**: Installed Mobile App (Mobile-First Responsive PWA / iOS & Android) & Responsive Desktop Web Dashboard (`http://localhost:8080` / Tailscale)
+- **Document Version**: 1.1.0
 - **Status**: Low-Level Design / UI Specification
 - **Traceability**: Derives from [`REQUIREMENTS.md`](file:///c:/ajay/GoLang/GoogleAgents/job-hunt-naukri/REQUIREMENTS.md#L109-L204), [`ARCHITECTURE.md`](file:///c:/ajay/GoLang/GoogleAgents/job-hunt-naukri/ARCHITECTURE.md#L57-L91), and [`component_diagram.html`](file:///c:/ajay/GoLang/GoogleAgents/job-hunt-naukri/component_diagram.html)
 
@@ -11,37 +11,44 @@
 
 ## 1. Scope & Objective
 
-The **Candidate Access Layer** is the primary interface between the candidate and the autonomous job agent proxy. Installed on the user's mobile smartphone (as an iOS/Android PWA or Native Shell), it acts as a **10-second daily approval remote control and configuration studio**.
+The **Candidate Access Layer** is the dual-surface user interface between the candidate and the autonomous job agent proxy:
+1. **Mobile Smartphone Experience (PWA / Installed App):** Acts as a **10-second daily approval remote control and alert center**. Designed for single-hand thumb navigation, morning glanceability, and rapid 1-tap micro-decisions.
+2. **Desktop Dashboard Experience (Local Browser at `localhost:8080` or Tailscale):** Acts as an in-depth **Configuration Studio & Match Radar**. Designed for multi-column widescreen workflows: side-by-side resume vs. job description comparisons, skill matrix tuning, deep audit log analysis, and bulk data exports.
 
 ### Core Tenet
-The mobile app does not require continuous attention. It operates under a **"Configure Once, Supervise in 10 Seconds"** philosophy:
+The interface operates under a **"Configure Once, Supervise in 10 Seconds"** philosophy:
 1. Candidate onboards in under 5 minutes (Auth $\rightarrow$ Portal Creds $\rightarrow$ Resume Upload $\rightarrow$ Skill Recency Review $\rightarrow$ Predefined QA).
-2. Daily runs happen autonomously at 09:00 AM.
+2. Daily runs execute autonomously at 09:00 AM without requiring open browser tabs.
 3. The app only prompts the candidate when a high-match job ($\ge 70\%$) requires human input for an ambiguous/novel recruiter question.
 
 ---
 
-## 2. Information Architecture & Navigation
+## 2. Information Architecture & Dual Navigation Model
 
 ```mermaid
 graph TD
-    Root["Mobile App Launch"] --> Auth{"Authenticated?"}
-    Auth -- "No" --> Screen1["Screen 1: Login & Biometric Auth"]
-    Auth -- "Yes" --> Nav["Bottom Tab Navigation"]
+    Root["Application Launch (Mobile / Desktop)"] --> Auth{"Authenticated?"}
+    Auth -- "No" --> Screen1["Screen 1: Login, Registration & Biometric Auth"]
+    Auth -- "Yes" --> Layout{"Viewport Detection"}
     
-    Nav --> Tab1["Tab 1: Mission Control (Home)"]
-    Nav --> Tab2["Tab 2: Question Queue (Feed)"]
-    Nav --> Tab3["Tab 3: Matches & History"]
-    Nav --> Tab4["Tab 4: Profile & Studio"]
+    subgraph MobileNav["Mobile Navigation (Bottom Tab Bar)"]
+        Layout -- "< 768px (Mobile)" --> MTabs["Bottom Tabs: Mission | Queue | Matches | Studio"]
+    end
 
-    Tab4 --> Screen2["Screen 2: Portal Credentials Vault"]
-    Tab4 --> Screen3["Screen 3: Resume Ingestion Studio"]
-    Tab4 --> Screen4["Screen 4: Dynamic Skill Recency Matrix"]
-    Tab4 --> Screen5["Screen 5: Predefined QA Profile"]
+    subgraph DesktopNav["Desktop Navigation (Collapsible Sidebar + Top Bar)"]
+        Layout -- ">= 768px (Desktop)" --> DSidebar["Sidebar: Mission Control | Question Queue | Matches | Radar | Studio"]
+    end
+
+    MTabs & DSidebar --> Screen6["Screen 6: Mission Control & Live Monitor"]
+    MTabs & DSidebar --> Screen7["Screen 7: 1-Tap Question Escalation Feed"]
+    MTabs & DSidebar --> Screen8["Screen 8: Application History & Match Detail"]
+    MTabs & DSidebar --> Screen9["Screen 9: Market Intelligence & Skill Gap Radar"]
     
-    Tab1 --> Screen6["Screen 6: Live Run Monitor & Safety Controls"]
-    Tab2 --> Screen7["Screen 7: 1-Tap Question Escalation Card"]
-    Tab3 --> Screen8["Screen 8: Job Application Audit Detail"]
+    MTabs & DSidebar --> StudioGroup["Studio & Settings Screens"]
+    StudioGroup --> Screen2["Screen 2: Portal Credentials Vault (Naukri)"]
+    StudioGroup --> Screen3["Screen 3: Resume Ingestion Studio"]
+    StudioGroup --> Screen4["Screen 4: Dynamic Skill Recency Matrix"]
+    StudioGroup --> Screen5["Screen 5: Predefined QA Profile"]
 ```
 
 ---
@@ -107,7 +114,7 @@ graph TD
 ### Screen 6: Mission Control & Live Run Monitor (`CAL-SCR-06`)
 * **Purpose**: Real-time morning operational dashboard displaying scan progress, daily quota caps, and safety states.
 * **Functional Requirements**:
-  * **FR-UI-6.1 (Daily Run Countdown & Status)**: Status header displaying next scheduled run (*"Next Autonomous Scan: Tomorrow 09:00 AM"*) or live run state (*"Scanning Portal 1... Page 2 of 4"*).
+  * **FR-UI-6.1 (Daily Run Countdown & Status)**: Status header displaying next scheduled run (*"Next Autonomous Scan: Tomorrow 09:00 AM"*) or live run state (*"Scanning Naukri... Page 2 of 4"*).
   * **FR-UI-6.2 (Daily Cap Meter)**: Visual progress bar representing applied vs. daily cap (e.g., `3 / 5 Applied Today` in Pilot Phase).
   * **FR-UI-6.3 (On-Demand "Run Now" Trigger)**: Action button to initiate an immediate scan with modal options: `Dry-Run (Score Only)` vs. `Live Run (Apply)`.
   * **FR-UI-6.4 (Anti-Bot Safety Banner)**: Real-time safety indicator:
@@ -142,19 +149,136 @@ graph TD
     * Questions answered with tier source (`Tier 1 Predefined`, `Tier 2 LLM`, `Tier 3 User Approved`).
   * **FR-UI-8.4 (External Portal Link)**: 1-click button to view the original posting URL in the mobile browser.
 
+### Screen 9: Market Intelligence & Skill Gap Radar (`CAL-SCR-09`)
+* **Purpose**: Aggregates missing technical skills across postings scoring 50%–69% to identify emerging high-demand technologies the candidate lacks.
+* **Functional Requirements**:
+  * **FR-UI-9.1 (Top 10 In-Demand Gap Chart)**: Visual horizontal bar chart ranking the top 10 technologies required by employer listings that the candidate does not have in their verified profile.
+  * **FR-UI-9.2 (Opportunity Impact Metric)**: For each missing skill, display the calculated unlock potential (e.g., *"Adding Kafka Streams would qualify 6 additional listings this week"*).
+  * **FR-UI-9.3 (1-Tap 'Add to Profile' Action)**: Direct link to append any identified skill directly into Screen 4 (Dynamic Skill Matrix) if the candidate recently acquired experience in it.
+  * **FR-UI-9.4 (Daily Market Trend Summary)**: Exportable digest summarizing salary bands, common tech stacks, and top hiring companies from scanned jobs.
+
 ---
 
-## 4. Non-Functional UI Requirements
+## 4. Desktop-Specific Ergonomics & Viewport Adaptations
 
-1. **Touch Ergonomics & Safe Areas**:
-   * All primary interactive targets (Approve, Run Now, Save) $\ge 48\text{px} \times 48\text{px}$.
+When accessed via a desktop browser (`http://localhost:8080` or Tailscale), the UI transitions from single-column mobile cards to a productivity-focused widescreen workstation:
+
+### 4.1 Responsive Breakpoint Matrix
+| Breakpoint | Target Device | Layout Behavior |
+| :--- | :--- | :--- |
+| `< 640px` (Mobile) | Smartphones | Single-column cards, bottom navigation tab bar, modal popups. |
+| `640px – 1024px` (Tablet) | iPad / Tablets | 2-column grid for metrics, collapsible icon rail navigation. |
+| `> 1024px` (Desktop) | Laptops & Monitors | Fixed left sidebar navigation (240px), Master-Detail 2-pane / 3-pane split layouts. |
+
+### 4.2 Desktop Master-Detail Split Pane
+* **Split Ratio**: Left Pane (380px fixed list of jobs / queue cards) | Right Pane (Flexible viewport for full job description, parsed skill highlights, and recruiter QA editor).
+* **Side-by-Side Match Studio**: Allows the candidate to view their active resume on the left half and the scraped job listing on the right half, with color-coded diff highlights:
+  * 🟢 Green: Verified active skills ($\gamma = 1.0$)
+  * 🟡 Amber: Verified legacy skills with decay ($\gamma = 0.5 - 0.8$)
+  * 🔴 Red: Missing required job skills
+
+### 4.3 Desktop Keyboard Shortcuts
+| Shortcut Key | Action Performed | Screen Scope |
+| :--- | :--- | :--- |
+| `J` / `K` | Navigate down / up through job listings & queue cards | Screen 7 (Queue) & Screen 8 (Matches) |
+| `A` | **Approve & Apply** for active question card | Screen 7 (Queue) |
+| `S` | **Skip** active question / job listing | Screen 7 (Queue) |
+| `Space` | Toggle side-by-side inspection view modal | Screen 8 (Matches) |
+| `R` | Trigger **Run Scan Now** modal | Screen 6 (Mission Control) |
+| `/` | Focus global search & filter bar | Screen 8 (Matches) |
+| `Esc` | Close active modal or drawer | Global |
+
+### 4.4 Desktop Data & Audit Export
+* **Bulk Export Button**: Top right header offers 1-click export of the complete SQLite application history in **CSV**, **JSON**, or **Markdown Daily Digest** format.
+
+---
+
+## 5. Operational States, Modals & Safety Dialogs
+
+### 5.1 Empty / Idle States
+* **Zero Queue Items State (`CAL-STATE-EMPTY-QUEUE`):** When Tier 3 queue has 0 pending items, Screen 7 renders an illustration with text: *"You're all caught up! The agent auto-applied to eligible listings. Next autonomous run: Tomorrow 09:00 AM."*
+* **Sunday Idle State (`CAL-STATE-SUNDAY`):** Mission Control displays a calm idle badge: *"Sunday Rest Mode — Crawler paused cleanly to emulate organic human candidate patterns."*
+
+### 5.2 Circuit Breaker & CAPTCHA Intervention Modal (`CAL-MODAL-01`)
+* **Trigger**: Triggered via Server-Sent Events when Playwright crawler detects a Cloudflare turnstile, CAPTCHA modal, or HTTP 403 Forbidden.
+* **UI Behavior**:
+  * Persistent Amber/Red top banner across all screens: *"⚠️ Bot Challenge Detected on Naukri — Agent Paused for Safety."*
+  * Clicking the banner opens a modal displaying the exact page screenshot, with guidance:
+    1. *"Open your browser to solve the challenge manually."*
+    2. *"Click [ Resume Scan ] once completed."*
+  * Prevents account suspension through aggressive brute-force retries.
+
+### 5.3 Session Cookie Expiration Modal (`CAL-MODAL-02`)
+* **Trigger**: When portal crawler detects invalid or expired login cookies.
+* **UI Behavior**: Displays a warning card with 1-click *"Re-Authenticate Portal"* action that opens the Portal Vault with pre-filled User ID, requiring only quick password entry or OTP confirmation.
+
+---
+
+## 6. Frontend Component Hierarchy & API Mapping
+
+### 6.1 React Component Structure (`web/src/components/`)
+```
+web/src/
+├── components/
+│   ├── layout/
+│   │   ├── AppShell.tsx            <-- Dual layout wrapper (Sidebar for desktop, BottomNav for mobile)
+│   │   ├── DesktopSidebar.tsx      <-- 240px fixed left sidebar with live badge counters
+│   │   ├── MobileBottomNav.tsx     <-- Mobile 4-tab thumb navigation
+│   │   └── CircuitBreakerBanner.tsx<-- Global SSE alert banner for CAPTCHA/pauses
+│   ├── auth/
+│   │   ├── LoginScreen.tsx         <-- Welcome login + Face ID quick unlock
+│   │   └── SignUpScreen.tsx        <-- Candidate account creation
+│   ├── mission/
+│   │   ├── MissionControl.tsx      <-- Hero run state, pilot cap meter, and SSE log feed
+│   │   └── AutoApplyThreshold.tsx  <-- Percentage tabs (≥60%, ≥70%, ≥80%, ≥85%)
+│   ├── queue/
+│   │   ├── QuestionQueue.tsx       <-- List of Tier 3 pending cards
+│   │   └── QuestionCard.tsx        <-- Recruiter question, AI draft, 1-tap Approve & Apply
+│   ├── matches/
+│   │   ├── MatchHistory.tsx        <-- Master-Detail table / card feed
+│   │   └── MatchInspectorModal.tsx <-- Side-by-side skill diff & question audit
+│   ├── radar/
+│   │   └── SkillGapRadar.tsx       <-- Screen 9 horizontal bar chart & market insights
+│   └── studio/
+│       ├── PortalVault.tsx         <-- Naukri credential manager (AES-256-GCM)
+│       ├── ResumeStudio.tsx        <-- PDF/DOCX file picker & parsed timeline
+│       ├── SkillRecencyMatrix.tsx  <-- Steppers, last used years, and level selection dots
+│       └── PredefinedQAProfile.tsx <-- CTC, notice period, and relocation form
+└── hooks/
+    ├── useEventStream.ts           <-- Server-Sent Events broker (/api/v1/stream)
+    ├── useKeyboardShortcuts.ts     <-- Desktop J/K/A/S hotkey listener
+    └── useResponsiveLayout.ts      <-- Viewport breakpoint detector (< 768px vs >= 768px)
+```
+
+### 6.2 REST API & Event Mapping Matrix
+| Screen / Action | HTTP Method & Path | SSE Event Triggered | Description |
+| :--- | :--- | :--- | :--- |
+| **Screen 1: Auth / Sign Up** | `POST /api/v1/auth/login`<br>`POST /api/v1/auth/register` | None | JWT issuance and session initialization |
+| **Screen 2: Portal Vault** | `GET /api/v1/portals`<br>`POST /api/v1/portals/credentials` | None | Read portal status & write AES-256-GCM creds |
+| **Screen 3: Resume Studio** | `POST /api/v1/resume/upload` | `RESUME_PARSED` | Multipart PDF/DOCX upload & extraction trigger |
+| **Screen 4: Skill Matrix** | `GET /api/v1/skills`<br>`PUT /api/v1/skills` | `SKILLS_UPDATED` | Read/write verified skill recency & levels |
+| **Screen 5: Predefined QA** | `GET /api/v1/profile/qa`<br>`POST /api/v1/profile/qa` | None | Read/write deterministic screening answers |
+| **Screen 6: Mission Control** | `POST /api/v1/runs/start`<br>`POST /api/v1/runs/abort` | `RUN_STATE_CHANGED`<br>`LOG_EMITTED` | Trigger on-demand live or dry-run scan |
+| **Screen 7: Question Feed** | `GET /api/v1/queue`<br>`POST /api/v1/queue/:id/approve` | `QUESTION_RESOLVED` | Approve AI draft, inject answer, resume crawler |
+| **Screen 8: Matches** | `GET /api/v1/jobs` | `JOB_APPLIED` | Paginated listing of evaluated/applied jobs |
+| **Screen 9: Skill Radar** | `GET /api/v1/analytics/skill-gaps` | None | Aggregated missing skills from 50–69% jobs |
+| **Global Circuit Breaker** | `POST /api/v1/runs/circuit-breaker/resume` | `CHALLENGE_DETECTED`<br>`AGENT_RESUMED` | Alert & resume after manual CAPTCHA solve |
+
+---
+
+## 7. Non-Functional UI Requirements
+
+1. **Touch & Click Ergonomics**:
+   * Mobile touch targets $\ge 48\text{px} \times 48\text{px}$.
    * Safe area insets (`env(safe-area-inset-top)` and `env(safe-area-inset-bottom)`) implemented for iPhone Dynamic Island, Home Bar, and Android navigation bars.
+   * Desktop layout provides natural hover states, focus rings, and tab indexing for full accessibility.
 2. **Offline & Reconnection Handling**:
    * Automatic exponential backoff reconnection for Server-Sent Events (SSE).
-   * Offline banner: *"Working Offline — Changes will sync when reconnected to agent"*.
+   * Global banner: *"Reconnecting to job-agent proxy..."* with non-blocking cached state.
 3. **Theme & Contrast**:
-   * Dual theme support: High-contrast Dark Mode (Slate 950) by default, with Light Mode toggle.
-   * WCAG AA compliance ($\ge 4.5:1$ contrast ratio for all text).
+   * High-contrast Dark Mode (Slate 950 base) by default.
+   * WCAG AA compliance ($\ge 4.5:1$ contrast ratio for all text elements).
 4. **Performance Budgets**:
-   * Initial page load $\le 1.2\text{s}$ on 4G mobile networks.
-   * Approval tap to crawler acknowledgement $\le 300\text{ms}$.
+   * Mobile initial load $\le 1.2\text{s}$ over 4G mobile networks.
+   * Desktop render latency $\le 200\text{ms}$ on `localhost:8080`.
+   * 1-Tap approval to Playwright crawler acknowledgement $\le 300\text{ms}$.

@@ -339,3 +339,127 @@
 |  +------------------------------------+  |
 +------------------------------------------+
 ```
+
+### Screen 9: Market Intelligence & Skill Gap Radar
+```
++------------------------------------------+
+|  < Back        SKILL GAP RADAR    [Export]|
+|------------------------------------------|
+|  Top missing technologies across jobs    |
+|  scoring 50%–69% (Market Demand Trends): |
+|                                          |
+|  1. Kafka Streams (6 listings require)   |
+|  [■■■■■■■■■■■■■■■□□□□□] 75% Demand       |
+|  Impact: +6 jobs unlock • [ + Add ]      |
+|                                          |
+|  2. Terraform / IaC (5 listings require) |
+|  [■■■■■■■■■■■■□□□□□□□□] 62% Demand       |
+|  Impact: +5 jobs unlock • [ + Add ]      |
+|                                          |
+|  3. GraphQL API (4 listings require)     |
+|  [■■■■■■■■■□□□□□□□□□□□] 50% Demand       |
+|  Impact: +4 jobs unlock • [ + Add ]      |
+|                                          |
+|  4. OpenTelemetry (3 listings require)   |
+|  [■■■■■■■□□□□□□□□□□□□□] 38% Demand       |
+|  Impact: +3 jobs unlock • [ + Add ]      |
+|                                          |
+|  Market Salary Index:                    |
+|  Avg Offered: ₹38L – ₹52L for Go + K8s   |
++------------------------------------------+
+```
+
+---
+
+## 4. Desktop Widescreen Layout Wireframes (> 1024px)
+
+```
++------------------------------------------------------------------------------------------------------------------------+
+| ⚡ JOB AGENT WORKSTATION         [ 🟢 Naukri Session Valid ] [ Gaussian Delay: 14s ]    [ 👤 candidate@domain.com ]    |
++-------------------+----------------------------------------------------+-----------------------------------------------+
+| NAVIGATION        | MASTER PANE (Listings / Mission Status)            | DETAIL INSPECTOR PANE (Match & QA Editor)     |
+|                   |                                                    |                                               |
+| [⚡] Mission Ctrl | Today's Postings (Mon-Sat 09:00 AM Scan):          | Target: Staff Cloud Architect (92% Match 🟢)  |
+| [⚠️] Queue (1)     | -------------------------------------------------- | Company: FinTech ScaleUp • Bangalore / Hybrid |
+| [📋] Matches (12)  | • [92%] Staff Cloud Architect — FinTech ScaleUp    | Auto-Apply Threshold: ≥ 70% [QUALIFIED]       |
+| [📊] Skill Radar   | • [84%] Senior Go Engineer — CloudSaaS Global      | --------------------------------------------- |
+|                   | • [48%] Full Stack Lead — Legacy Agency [Filtered] | Recruiter Screening Question (Tier 3 Review): |
+| STUDIO & SETTINGS |                                                    | "Describe your production experience with     |
+| [🔒] Naukri Vault | Daily Quota Cap: [■■■■■■■□□□] 3 / 5 Applied        |  distributed Kafka pipelines in Go?"          |
+| [📄] Resume Studio|                                                    |                                               |
+| [⭐] Skill Matrix  | Match Gate: [ ≥60% ] [ ≥70%* ] [ ≥80% ] [ ≥85% ]   | ✨ AI Suggested Answer (Resume Section 4):    |
+| [⚙️] Screening QA  | (4 jobs qualify for automatic submission today)    | +-------------------------------------------+ |
+|                   |                                                    | | Designed high-throughput Kafka streaming  | |
+| SYSTEM STATUS     | Live SSE Execution Stream:                         | | pipelines handling 50k events/sec in Go.  | |
+| SQLite WAL: OK    | [09:05:12] Found 14 fresh postings in last 24h     | +-------------------------------------------+ |
+| Playwright: Ready | [09:05:40] Lead SRE (84%) -> Auto-Applied (T1)     | Confidence: 74% • Citations: Project Delta    |
+| Tailscale: Active | [09:06:05] Staff Arch (92%) -> Pushed to Queue (T3)|                                               |
+|                   |                                                    | [x] Remember this answer in SQLite Cache      |
+| [ ? Shortcuts ]   | Action Triggers:                                   |                                               |
+| [ J/K ] Navigate  | [ ⚡ Run Scan Now ]  [ Dry-Run (Score Only) ]       | [  ✅ APPROVE & APPLY (A) ]   [ SKIP (S) ]    |
+| [ A ]   Approve   |                                                    |                                               |
+| [ S ]   Skip      |                                                    | Side-by-Side Resume Diff:                     |
+| [ R ]   Run Now   |                                                    | • Go (6 yrs, 2026): Match 1.0x                |
+| [ / ]   Search    |                                                    | • Kubernetes (5 yrs, 2026): Match 1.0x        |
+|                   |                                                    | • Kafka (4.5 yrs, 2024): Match 0.8x           |
++-------------------+----------------------------------------------------+-----------------------------------------------+
+```
+
+---
+
+## 5. Modal Dialog Specifications
+
+### 5.1 Circuit Breaker & CAPTCHA Safety Modal (`CAL-MODAL-01`)
+```
++-------------------------------------------------------------+
+| ⚠️ BOT CHALLENGE DETECTED — AGENT PAUSED                    |
++-------------------------------------------------------------+
+| The portal crawler encountered a security verification on: |
+| Portal: Naukri (https://www.naukri.com/login)               |
+| Challenge Type: Cloudflare Turnstile / CAPTCHA Modal        |
+|                                                             |
+| [ Screenshot of Portal Verification Screen ]                |
+|                                                             |
+| Instructions:                                               |
+| 1. Open the portal in your browser or solve the displayed   |
+|    verification challenge manually.                         |
+| 2. Do not brute force automated retries to protect account. |
+|                                                             |
+| [  ✅ I Solved It — Resume Crawler  ]   [  Abort Run  ]      |
++-------------------------------------------------------------+
+```
+
+---
+
+## 6. React Component Tree & Hook Architecture
+
+```
+web/src/
+├── components/
+│   ├── layout/
+│   │   ├── AppShell.tsx            <-- Responsive wrapper (Drawer/Sidebar + TopBar + BottomNav)
+│   │   ├── DesktopSidebar.tsx      <-- 240px fixed left workstation rail
+│   │   ├── MobileBottomNav.tsx     <-- Mobile 4-tab thumb dock
+│   │   └── CircuitBreakerModal.tsx <-- Global event-driven CAPTCHA pause dialog
+│   ├── mission/
+│   │   ├── MissionControl.tsx      <-- Live scan telemetry, quota progress, and run triggers
+│   │   └── MatchGateSelector.tsx   <-- Threshold tabs (≥60%, ≥70%, ≥80%, ≥85%)
+│   ├── queue/
+│   │   ├── QuestionQueue.tsx       <-- Tier 3 HITL question cards
+│   │   └── InlineAnswerEditor.tsx  <-- AI draft textarea with citation badge
+│   ├── matches/
+│   │   ├── MasterDetailSplit.tsx   <-- Desktop dual pane layout
+│   │   └── MatchInspector.tsx      <-- Resume vs. Job Description diff visualizer
+│   ├── radar/
+│   │   └── SkillGapChart.tsx       <-- Horizontal bar chart of top 10 market gaps
+│   └── studio/
+│       ├── NaukriVault.tsx         <-- AES-256-GCM encrypted portal credential manager
+│       ├── ResumeStudio.tsx        <-- Drag-and-drop PDF/DOCX ingestion
+│       ├── SkillRecencyMatrix.tsx  <-- Steppers, last-used years, and level selection dots
+│       └── PredefinedQAProfile.tsx <-- Standard screening questions form
+└── hooks/
+    ├── useEventStream.ts           <-- SSE connection manager with auto-reconnect
+    ├── useKeyboardShortcuts.ts     <-- Global hotkeys (A, S, J, K, R, Space, /)
+    └── useResponsiveLayout.ts      <-- Breakpoint observer (<640px, 640-1024px, >1024px)
+```
+

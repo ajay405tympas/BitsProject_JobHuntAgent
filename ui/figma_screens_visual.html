@@ -54,19 +54,35 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
       <div class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400 font-bold">
-          📱
+          ⚡
         </div>
         <div>
           <h1 class="font-bold text-base text-slate-100 flex items-center gap-2">
             Candidate Access Layer: Figma Prototype
-            <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 font-mono">Mobile App</span>
+            <span id="current-viewport-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 font-mono">Mobile (375px)</span>
           </h1>
-          <p class="text-xs text-slate-400">Interactive Figma screens &bull; 8 Core Mobile Views</p>
+          <p class="text-xs text-slate-400">Interactive Figma Prototype &bull; 9 Mobile Views + Desktop Workstation</p>
         </div>
       </div>
 
+      <!-- Viewport Switcher & Alerts -->
+      <div class="flex items-center gap-2.5">
+        <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
+          <button onclick="setViewport('mobile')" id="vp-btn-mobile" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-medium flex items-center gap-1.5 shadow transition">
+            <span>📱</span> Mobile
+          </button>
+          <button onclick="setViewport('desktop')" id="vp-btn-desktop" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 font-medium flex items-center gap-1.5 transition">
+            <span>💻</span> Desktop
+          </button>
+        </div>
+        <button onclick="openCaptchaModal()" class="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 text-xs font-semibold flex items-center gap-1.5 transition shadow">
+          <span class="w-2 h-2 rounded-full bg-rose-500 pulse-dot"></span>
+          <span>🛡️ Test CAPTCHA Modal</span>
+        </button>
+      </div>
+
       <!-- Quick Screen Switcher Chips -->
-      <div class="flex items-center gap-1.5 overflow-x-auto py-1 max-w-full text-xs">
+      <div id="screen-switcher-bar" class="w-full flex items-center gap-1.5 overflow-x-auto py-1 text-xs border-t border-slate-800/80 pt-2.5">
         <button onclick="setScreen('auth')" id="nav-auth" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-medium transition shadow-sm">
           1. Auth
         </button>
@@ -92,123 +108,479 @@
         <button onclick="setScreen('history')" id="nav-history" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition">
           8. Matches
         </button>
+        <button onclick="setScreen('radar')" id="nav-radar" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition">
+          9. Skill Radar
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- Main Body Layout: Device Preview + Functional Spec Details -->
-  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+  <!-- Main Body Layout: Device Preview + Functional Spec Details OR Desktop Workstation -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
     
-    <!-- Left Column: Realistic Mobile Device Frame -->
-    <div class="lg:col-span-5 flex flex-col items-center justify-center">
-      <div class="iphone-frame bg-slate-900 border border-slate-800 flex flex-col">
-        
-        <!-- Dynamic Island & Status Bar -->
-        <div class="dynamic-island">
-          <div class="w-2.5 h-2.5 rounded-full bg-slate-900 border border-slate-700"></div>
-          <div class="w-2.5 h-2.5 rounded-full bg-emerald-500/80 pulse-dot"></div>
+    <!-- ==================== MOBILE VIEW CONTAINER ==================== -->
+    <div id="mobile-view-container" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <!-- Left Column: Realistic Mobile Device Frame -->
+      <div class="lg:col-span-5 flex flex-col items-center justify-center">
+        <div class="iphone-frame bg-slate-900 border border-slate-800 flex flex-col">
+          
+          <!-- Dynamic Island & Status Bar -->
+          <div class="dynamic-island">
+            <div class="w-2.5 h-2.5 rounded-full bg-slate-900 border border-slate-700"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-emerald-500/80 pulse-dot"></div>
+          </div>
+          <div class="h-11 px-7 flex items-end justify-between text-[11px] font-semibold text-slate-400 pb-1 z-30 select-none">
+            <span>09:00</span>
+            <div class="flex items-center gap-1.5 text-[10px]">
+              <span>5G</span>
+              <span>100% 🔋</span>
+            </div>
+          </div>
+
+          <!-- Phone Content Area (Scrollable) -->
+          <div id="phone-screen" class="flex-1 overflow-y-auto custom-scroll p-4 text-xs pb-16 relative">
+            <!-- Active Screen Rendered Here By JS -->
+          </div>
+
+          <!-- Bottom Navigation Bar on Device -->
+          <div class="h-14 bg-slate-950/95 border-t border-slate-800/80 absolute bottom-0 left-0 right-0 flex items-center justify-around px-2 text-[10px] z-30 select-none">
+            <button onclick="setScreen('mission')" id="btn-tab-mission" class="flex flex-col items-center gap-0.5 text-blue-400">
+              <span class="text-base">⚡</span>
+              <span>Mission</span>
+            </button>
+            <button onclick="setScreen('feed')" id="btn-tab-feed" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200 relative">
+              <span class="text-base">⚠️</span>
+              <span>Queue</span>
+              <span class="absolute top-0 right-2 w-2 h-2 rounded-full bg-amber-400 pulse-dot"></span>
+            </button>
+            <button onclick="setScreen('history')" id="btn-tab-history" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200">
+              <span class="text-base">📋</span>
+              <span>Matches</span>
+            </button>
+            <button onclick="setScreen('vault')" id="btn-tab-settings" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200">
+              <span class="text-base">⚙️</span>
+              <span>Studio</span>
+            </button>
+          </div>
+
         </div>
-        <div class="h-11 px-7 flex items-end justify-between text-[11px] font-semibold text-slate-400 pb-1 z-30 select-none">
-          <span>09:00</span>
-          <div class="flex items-center gap-1.5 text-[10px]">
-            <span>5G</span>
-            <span>100% 🔋</span>
+
+        <div class="text-[11px] text-slate-500 mt-4 text-center">
+          Interactive Mobile Preview &bull; Click UI elements to test prototype flows
+        </div>
+      </div>
+
+      <!-- Right Column: Functional Specification & Figma Tokens -->
+      <div class="lg:col-span-7 space-y-6">
+        
+        <!-- Screen Specification Header Card -->
+        <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 shadow-sm space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div>
+              <span id="spec-code" class="text-[11px] font-mono text-blue-400 font-bold uppercase">CAL-SCR-01</span>
+              <h2 id="spec-title" class="text-lg font-bold text-slate-100">App Unlock &amp; Customer Authentication</h2>
+            </div>
+            <span id="spec-status" class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              Required / Active
+            </span>
+          </div>
+
+          <p id="spec-desc" class="text-xs text-slate-300 leading-relaxed">
+            Protects the personal agent from unauthorized access. Supports both existing candidate login (with Face ID / Touch ID) and new candidate account registration (Sign Up) to initiate the 5-minute onboarding flow.
+          </p>
+
+          <!-- Acceptance Criteria Checklist -->
+          <div class="space-y-2 pt-2">
+            <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider">Functional Acceptance Criteria:</h3>
+            <ul id="spec-criteria" class="space-y-1.5 text-xs text-slate-400 list-disc list-inside">
+              <!-- Rendered by JS -->
+            </ul>
           </div>
         </div>
 
-        <!-- Phone Content Area (Scrollable) -->
-        <div id="phone-screen" class="flex-1 overflow-y-auto custom-scroll p-4 text-xs pb-16 relative">
-          <!-- Active Screen Rendered Here By JS -->
+        <!-- Quick Action / Interactive Trigger Box -->
+        <div class="p-5 rounded-2xl bg-blue-950/20 border border-blue-500/30 space-y-3">
+          <h3 class="text-xs font-bold text-blue-400 flex items-center gap-2">
+            <span>⚡</span> Try Interactive Screen Actions:
+          </h3>
+          <div id="interactive-actions" class="flex flex-wrap gap-2 text-xs">
+            <!-- Rendered by JS -->
+          </div>
         </div>
 
-        <!-- Bottom Navigation Bar on Device -->
-        <div class="h-14 bg-slate-950/95 border-t border-slate-800/80 absolute bottom-0 left-0 right-0 flex items-center justify-around px-2 text-[10px] z-30 select-none">
-          <button onclick="setScreen('mission')" id="btn-tab-mission" class="flex flex-col items-center gap-0.5 text-blue-400">
-            <span class="text-base">⚡</span>
-            <span>Mission</span>
-          </button>
-          <button onclick="setScreen('feed')" id="btn-tab-feed" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200 relative">
-            <span class="text-base">⚠️</span>
-            <span>Queue</span>
-            <span class="absolute top-0 right-2 w-2 h-2 rounded-full bg-amber-400 pulse-dot"></span>
-          </button>
-          <button onclick="setScreen('history')" id="btn-tab-history" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200">
-            <span class="text-base">📋</span>
-            <span>Matches</span>
-          </button>
-          <button onclick="setScreen('vault')" id="btn-tab-settings" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200">
-            <span class="text-base">⚙️</span>
-            <span>Studio</span>
-          </button>
+        <!-- Figma Tokens Reference Table -->
+        <div class="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
+          <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider">Associated Figma Design Tokens:</h3>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
+            <div class="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
+              <span class="text-[10px] text-slate-500 block">Primary Action</span>
+              <span class="font-mono text-blue-400 font-semibold">bg-blue-600</span>
+            </div>
+            <div class="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
+              <span class="text-[10px] text-slate-500 block">Touch Target</span>
+              <span class="font-mono text-emerald-400 font-semibold">&ge; 48px × 48px</span>
+            </div>
+            <div class="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
+              <span class="text-[10px] text-slate-500 block">Card Corner Radius</span>
+              <span class="font-mono text-purple-400 font-semibold">20px (rounded-2xl)</span>
+            </div>
+          </div>
         </div>
 
-      </div>
-
-      <div class="text-[11px] text-slate-500 mt-4 text-center">
-        Interactive Mobile Preview &bull; Click UI elements to test prototype flows
       </div>
     </div>
 
-    <!-- Right Column: Functional Specification & Figma Tokens -->
-    <div class="lg:col-span-7 space-y-6">
+    <!-- ==================== DESKTOP WORKSTATION CONTAINER ==================== -->
+    <div id="desktop-view-container" class="hidden w-full space-y-6">
       
-      <!-- Screen Specification Header Card -->
-      <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 shadow-sm space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+      <!-- Desktop Sub-Header / Control Strip -->
+      <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex flex-wrap items-center justify-between gap-4 shadow-sm">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400 font-bold text-lg">
+            💻
+          </div>
           <div>
-            <span id="spec-code" class="text-[11px] font-mono text-blue-400 font-bold uppercase">CAL-SCR-01</span>
-            <h2 id="spec-title" class="text-lg font-bold text-slate-100">App Unlock &amp; Customer Authentication</h2>
+            <h2 class="text-sm font-bold text-slate-100 flex items-center gap-2">
+              Candidate Desktop Workstation &bull; Widescreen Split-Pane Studio
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Operational</span>
+            </h2>
+            <p class="text-xs text-slate-400">Master-detail ergonomics, real-time SSE scan monitor, and instant hotkey triage</p>
           </div>
-          <span id="spec-status" class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            Required / Active
-          </span>
         </div>
 
-        <p id="spec-desc" class="text-xs text-slate-300 leading-relaxed">
-          Provides customer login, biometric unlock, and HTTP-only JWT token management to ensure only the authorized candidate can configure credentials, view applications, or approve screening questions.
-        </p>
-
-        <!-- Acceptance Criteria Checklist -->
-        <div class="space-y-2 pt-2">
-          <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider">Functional Acceptance Criteria:</h3>
-          <ul id="spec-criteria" class="space-y-1.5 text-xs text-slate-400 list-disc list-inside">
-            <!-- Rendered by JS -->
-          </ul>
-        </div>
-      </div>
-
-      <!-- Quick Action / Interactive Trigger Box -->
-      <div class="p-5 rounded-2xl bg-blue-950/20 border border-blue-500/30 space-y-3">
-        <h3 class="text-xs font-bold text-blue-400 flex items-center gap-2">
-          <span>⚡</span> Try Interactive Screen Actions:
-        </h3>
-        <div id="interactive-actions" class="flex flex-wrap gap-2 text-xs">
-          <!-- Rendered by JS -->
+        <div class="flex items-center gap-2">
+          <div class="text-right text-xs mr-2 hidden sm:block">
+            <div class="font-medium text-slate-200">Ajay (Staff Architect)</div>
+            <div class="text-[10px] text-emerald-400 flex items-center justify-end gap-1 font-mono">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span>
+              Naukri Vault Active (AES-256)
+            </div>
+          </div>
+          <button onclick="alert('⚡ Autonomous morning scan triggered across Naukri!')" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1.5">
+            <span>⚡</span> Run Scan Now
+          </button>
+          <button onclick="alert('Dry run completed: 14 listings scored, 0 submitted.')" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-medium transition">
+            Dry-Run (Score Only)
+          </button>
         </div>
       </div>
 
-      <!-- Figma Tokens Reference Table -->
-      <div class="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
-        <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider">Associated Figma Design Tokens:</h3>
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
-          <div class="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
-            <span class="text-[10px] text-slate-500 block">Primary Action</span>
-            <span class="font-mono text-blue-400 font-semibold">bg-blue-600</span>
+      <!-- Desktop 3-Column / Master-Detail Layout -->
+      <div class="grid grid-cols-12 gap-6 items-start">
+        
+        <!-- Column 1: Desktop Navigation Sidebar (Col 2) -->
+        <div class="col-span-12 lg:col-span-2 space-y-3">
+          <div class="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 space-y-1 text-xs">
+            <div class="text-[10px] uppercase font-bold text-slate-500 px-2 pb-1 tracking-wider">Navigation</div>
+            <button class="w-full text-left px-3 py-2 rounded-xl bg-blue-600/20 text-blue-400 font-semibold border border-blue-500/30 flex items-center justify-between">
+              <span class="flex items-center gap-2"><span>⚡</span> Mission Control</span>
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            </button>
+            <button onclick="alert('Viewing Escalation Queue')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-800 text-slate-300 font-medium flex items-center justify-between transition">
+              <span class="flex items-center gap-2"><span>⚠️</span> Escalations</span>
+              <span class="px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-mono">1</span>
+            </button>
+            <button onclick="alert('Viewing Matches History')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-800 text-slate-300 font-medium flex items-center justify-between transition">
+              <span class="flex items-center gap-2"><span>📋</span> Match Studio</span>
+              <span class="text-slate-500 text-[10px] font-mono">6</span>
+            </button>
+            <button onclick="setScreen('skills'); setViewport('mobile')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-800 text-slate-300 font-medium flex items-center gap-2 transition">
+              <span>🎯</span> Skill Matrix
+            </button>
+            <button onclick="setScreen('radar'); setViewport('mobile')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-800 text-slate-300 font-medium flex items-center gap-2 transition">
+              <span>📡</span> Market Radar
+            </button>
+            <button onclick="setScreen('vault'); setViewport('mobile')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-800 text-slate-300 font-medium flex items-center gap-2 transition">
+              <span>🔐</span> Portal Vault
+            </button>
+            <button onclick="setScreen('qa'); setViewport('mobile')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-800 text-slate-300 font-medium flex items-center gap-2 transition">
+              <span>📝</span> Predefined QA
+            </button>
           </div>
-          <div class="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
-            <span class="text-[10px] text-slate-500 block">Touch Target</span>
-            <span class="font-mono text-emerald-400 font-semibold">&ge; 48px × 48px</span>
+
+          <!-- Daily Pilot Meter Widget -->
+          <div class="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 space-y-2 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] text-slate-400">Daily Pilot Cap</span>
+              <span class="font-mono font-bold text-blue-400 text-[11px]">3 / 5</span>
+            </div>
+            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+              <div class="bg-blue-500 h-2 rounded-full" style="width: 60%"></div>
+            </div>
+            <div class="text-[10px] text-slate-500 leading-tight">Safety pilot limit prevents aggressive portal anti-bot detection.</div>
           </div>
-          <div class="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
-            <span class="text-[10px] text-slate-500 block">Card Corner Radius</span>
-            <span class="font-mono text-purple-400 font-semibold">20px (rounded-2xl)</span>
+
+          <!-- Hotkey Cheat Sheet -->
+          <div class="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 space-y-2 text-xs">
+            <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Hotkey Shortcuts</div>
+            <div class="space-y-1 font-mono text-[10px] text-slate-400">
+              <div class="flex justify-between"><span class="text-blue-400">[J] / [K]</span><span>Next / Prev Job</span></div>
+              <div class="flex justify-between"><span class="text-emerald-400">[A]</span><span>Approve &amp; Apply</span></div>
+              <div class="flex justify-between"><span class="text-rose-400">[S]</span><span>Skip Job</span></div>
+              <div class="flex justify-between"><span class="text-purple-400">[R]</span><span>Run Live Scan</span></div>
+              <div class="flex justify-between"><span class="text-amber-400">[D]</span><span>Dry Run Only</span></div>
+            </div>
           </div>
         </div>
+
+        <!-- Column 2: Center Master Table / Feed Pane (Col 5) -->
+        <div class="col-span-12 lg:col-span-5 space-y-4">
+          <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-bold uppercase text-slate-200 tracking-wider">Candidate Feed &bull; Scanned Postings</h3>
+              <div class="flex gap-1 text-[10px]">
+                <button class="px-2 py-1 rounded-md bg-blue-600 text-white font-medium">All (6)</button>
+                <button class="px-2 py-1 rounded-md bg-slate-800 text-slate-300 hover:bg-slate-700">Pending (1)</button>
+                <button class="px-2 py-1 rounded-md bg-slate-800 text-slate-300 hover:bg-slate-700">Applied (3)</button>
+              </div>
+            </div>
+
+            <!-- Job Cards List -->
+            <div class="space-y-2.5">
+              
+              <!-- Job 1 (Selected & Pending Review) -->
+              <div class="p-3.5 rounded-xl bg-blue-950/30 border-2 border-blue-500/60 shadow space-y-2 cursor-pointer transition">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="font-bold text-xs text-slate-100">Staff Cloud Architect</span>
+                      <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">Tier 3 Review</span>
+                    </div>
+                    <div class="text-[11px] text-slate-400">FinTech ScaleUp &bull; Bangalore / Hybrid &bull; 45-55 LPA</div>
+                  </div>
+                  <span class="px-2 py-0.5 rounded text-xs font-bold font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">92%</span>
+                </div>
+                <div class="text-[10px] text-slate-400 flex items-center justify-between pt-1 border-t border-slate-800/80">
+                  <span class="text-amber-400 flex items-center gap-1 font-medium">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400 pulse-dot"></span>
+                    Novel Recruiter Question Waiting
+                  </span>
+                  <span class="text-slate-500 font-mono">Today 09:05 AM</span>
+                </div>
+              </div>
+
+              <!-- Job 2 (Auto-Applied) -->
+              <div class="p-3.5 rounded-xl bg-slate-850/60 border border-slate-800 hover:border-slate-700 space-y-2 cursor-pointer transition">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="font-bold text-xs text-slate-200">Lead SRE / Platform Engineer</span>
+                      <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Auto-Applied</span>
+                    </div>
+                    <div class="text-[11px] text-slate-400">CloudSaaS Global &bull; Remote &bull; 40-48 LPA</div>
+                  </div>
+                  <span class="px-2 py-0.5 rounded text-xs font-bold font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">86%</span>
+                </div>
+                <div class="text-[10px] text-slate-400 flex items-center justify-between pt-1 border-t border-slate-800/80">
+                  <span class="text-slate-400">Tier 1: Predefined CTC &amp; 30d Notice</span>
+                  <span class="text-slate-500 font-mono">Today 09:02 AM</span>
+                </div>
+              </div>
+
+              <!-- Job 3 (Auto-Applied) -->
+              <div class="p-3.5 rounded-xl bg-slate-850/60 border border-slate-800 hover:border-slate-700 space-y-2 cursor-pointer transition">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="font-bold text-xs text-slate-200">Principal Go Backend Engineer</span>
+                      <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Auto-Applied</span>
+                    </div>
+                    <div class="text-[11px] text-slate-400">DataFlow Systems &bull; Hyderabad &bull; 42-50 LPA</div>
+                  </div>
+                  <span class="px-2 py-0.5 rounded text-xs font-bold font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">78%</span>
+                </div>
+                <div class="text-[10px] text-slate-400 flex items-center justify-between pt-1 border-t border-slate-800/80">
+                  <span class="text-slate-400">Tier 2: Fact-grounded architecture draft</span>
+                  <span class="text-slate-500 font-mono">Today 08:58 AM</span>
+                </div>
+              </div>
+
+              <!-- Job 4 (Skipped) -->
+              <div class="p-3.5 rounded-xl bg-slate-900/40 border border-slate-800/60 opacity-60 space-y-1.5 cursor-pointer">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <span class="font-bold text-xs text-slate-300">Legacy Java Architect</span>
+                    <div class="text-[11px] text-slate-500">TechCorp Enterprises &bull; 30 LPA</div>
+                  </div>
+                  <span class="px-2 py-0.5 rounded text-xs font-bold font-mono bg-slate-800 text-slate-400">51%</span>
+                </div>
+                <div class="text-[10px] text-rose-400/80">Skipped: Below threshold (&lt; 70%)</div>
+              </div>
+
+            </div>
+
+            <!-- Real-Time SSE Crawler Log Ticker -->
+            <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 font-mono text-[10px] text-slate-400 space-y-1">
+              <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold flex items-center justify-between">
+                <span>Real-Time SSE Event Stream</span>
+                <span class="text-emerald-400">CONNECTED 🟢</span>
+              </div>
+              <div class="text-slate-300">[09:05:22] Scanned JD #849201: Staff Cloud Architect (FinTech ScaleUp)</div>
+              <div class="text-emerald-400">[09:05:23] Match evaluated: 92% &ge; 70% threshold</div>
+              <div class="text-amber-400">[09:05:24] Novel recruiter question detected &rarr; Escalated to Tier 3 HITL queue</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 3: Right Detail / Inspector Pane (Col 5) -->
+        <div class="col-span-12 lg:col-span-5 space-y-4">
+          <div class="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-4 shadow-sm">
+            <div class="flex items-start justify-between border-b border-slate-800 pb-3">
+              <div>
+                <span class="text-[10px] font-mono text-blue-400 font-bold uppercase">Posting Inspector &bull; ID #849201</span>
+                <h3 class="text-base font-bold text-slate-100">Staff Cloud Architect</h3>
+                <p class="text-xs text-slate-400">FinTech ScaleUp &bull; Bangalore (Hybrid) &bull; 45 - 55 LPA</p>
+              </div>
+              <div class="text-right">
+                <span class="text-xl font-bold font-mono text-emerald-400">92%</span>
+                <div class="text-[9px] text-slate-500 uppercase tracking-wider">Match Score</div>
+              </div>
+            </div>
+
+            <!-- Match Breakdown & Skill Alignment -->
+            <div class="space-y-2">
+              <h4 class="text-[11px] font-bold text-slate-300 uppercase tracking-wider">Candidate &bull; Skill Alignment:</h4>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <div class="p-2.5 rounded-xl bg-emerald-950/20 border border-emerald-500/30">
+                  <div class="text-[10px] text-emerald-400 font-bold mb-1">Matched Strengths (1.0x):</div>
+                  <div class="text-slate-300 text-[11px] space-y-0.5">
+                    <div>&bull; Go (Golang) (6y, Expert)</div>
+                    <div>&bull; Kubernetes (5y, Expert)</div>
+                    <div>&bull; High-Throughput Microservices</div>
+                  </div>
+                </div>
+                <div class="p-2.5 rounded-xl bg-amber-950/20 border border-amber-500/30">
+                  <div class="text-[10px] text-amber-400 font-bold mb-1">Partial / Adjacent:</div>
+                  <div class="text-slate-300 text-[11px] space-y-0.5">
+                    <div>&bull; Kafka Streams (4.5y, 0.8x)</div>
+                    <div>&bull; Cassandra (2y, 0.5x)</div>
+                    <div>&bull; Zero Hallucination Lock</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Novel Recruiter Screening Question Review Box -->
+            <div class="p-4 rounded-xl bg-amber-950/20 border border-amber-500/40 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-amber-400 pulse-dot"></span>
+                  Tier 3 Escalation: Novel Recruiter Question
+                </span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold">96% Confident</span>
+              </div>
+
+              <div class="p-2.5 rounded-lg bg-slate-950/80 border border-slate-800 text-xs text-slate-200">
+                <span class="font-bold text-slate-400 block text-[10px] uppercase">Recruiter Question:</span>
+                "Describe a scenario where you designed an event-driven system handling 100k+ TPS and resolved downstream backpressure."
+              </div>
+
+              <div class="space-y-1.5">
+                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">AI Fact-Grounded Proposed Answer:</label>
+                <div class="p-3 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-100 leading-relaxed font-sans">
+                  "Architected an event mesh in Go utilizing worker pools with bounded channels and Kafka consumer group rebalancing, mitigating downstream database saturation during 120k peak TPS surges."
+                </div>
+                <div class="text-[10px] text-slate-400 flex items-center gap-1 pt-0.5">
+                  <span class="text-emerald-400 font-bold">Citation:</span>
+                  <span>Lead Architect &bull; High-Throughput Ingestion Engine (Resume Page 2)</span>
+                </div>
+              </div>
+
+              <!-- Action Bar with Hotkey Tooltips -->
+              <div class="flex items-center gap-2 pt-2 border-t border-amber-500/20">
+                <button onclick="approveQuestion()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-1.5">
+                  <span>✅</span> Approve &amp; Apply <kbd class="ml-1 px-1.5 py-0.5 rounded bg-emerald-700 text-[10px] font-mono">[A]</kbd>
+                </button>
+                <button onclick="alert('Editing answer in modal...')" class="px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-medium transition">
+                  ✏️ Edit
+                </button>
+                <button onclick="alert('Job skipped.')" class="px-3 py-2.5 rounded-xl bg-rose-950/40 hover:bg-rose-900/40 text-rose-300 border border-rose-500/30 text-xs font-medium transition">
+                  Skip <kbd class="ml-1 px-1 py-0.5 rounded bg-rose-900 text-[9px] font-mono">[S]</kbd>
+                </button>
+              </div>
+            </div>
+
+            <!-- External Verification Link -->
+            <div class="flex items-center justify-between text-xs pt-1 text-slate-400">
+              <a href="#" onclick="alert('Opening original Naukri job posting in external browser tab')" class="text-blue-400 hover:underline flex items-center gap-1">
+                <span>View original posting on Naukri.com</span> &rarr;
+              </a>
+              <span class="text-[10px] text-slate-500 font-mono">Job ID: 29019284</span>
+            </div>
+
+          </div>
+        </div>
+
       </div>
 
     </div>
 
   </main>
+
+  <!-- ==================== CIRCUIT BREAKER CAPTCHA MODAL (CAL-MODAL-01) ==================== -->
+  <div id="captcha-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-rose-500/50 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 relative animate-fade-in">
+      
+      <!-- Modal Header -->
+      <div class="flex items-start justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 text-xl font-bold">
+            🛡️
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-base font-bold text-slate-100">Anti-Bot Challenge Detected</h3>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 font-mono animate-pulse">CIRCUIT BREAKER</span>
+            </div>
+            <p class="text-xs text-slate-400">Target: <strong class="text-slate-200">Naukri.com</strong> &bull; Crawler paused for safety</p>
+          </div>
+        </div>
+        <button onclick="closeCaptchaModal()" class="text-slate-400 hover:text-slate-200 text-lg leading-none">&times;</button>
+      </div>
+
+      <!-- Warning Description -->
+      <div class="p-3 rounded-xl bg-rose-950/30 border border-rose-500/30 text-xs text-rose-200 space-y-1">
+        <div class="font-bold flex items-center gap-1.5">
+          <span>🔊</span> Audible Alert Sounding &bull; Candidate Action Required
+        </div>
+        <p class="text-[11px] text-rose-300/90 leading-relaxed">
+          Naukri has presented an interactive CAPTCHA / Slider challenge. The autonomous engine has immediately halted actions to prevent account lockout.
+        </p>
+      </div>
+
+      <!-- Simulated Screenshot Area -->
+      <div class="rounded-xl border border-slate-800 bg-slate-950 p-4 space-y-3 text-center">
+        <div class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Live Headless Browser Snapshot</div>
+        <div class="h-32 rounded-lg bg-slate-900/90 border border-dashed border-slate-700 flex flex-col items-center justify-center text-xs text-slate-400 space-y-2 p-3">
+          <div class="text-2xl">🧩</div>
+          <div class="font-medium text-slate-300">Slide to complete the puzzle challenge</div>
+          <div class="w-48 bg-slate-800 h-3 rounded-full relative overflow-hidden">
+            <div class="bg-blue-500 h-3 w-12 rounded-full absolute left-4"></div>
+          </div>
+        </div>
+        <div class="text-[10px] text-slate-400 flex items-center justify-between px-1">
+          <span>Captured at 09:05:30 AM</span>
+          <span class="text-amber-400 font-mono">Auto-timeout in 04:30</span>
+        </div>
+      </div>
+
+      <!-- Resolution Actions -->
+      <div class="space-y-2 pt-1">
+        <div class="flex items-center gap-2">
+          <button onclick="solveCaptchaManually()" class="flex-1 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg transition flex items-center justify-center gap-2">
+            <span>✅</span> I Solved It — Resume Crawler
+          </button>
+          <button onclick="alert('Opening Naukri login session in default desktop browser...')" class="px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold transition">
+            🌐 Open Browser
+          </button>
+        </div>
+        <button onclick="closeCaptchaModal()" class="w-full py-2 text-center text-xs text-slate-400 hover:text-slate-300">
+          Dismiss &amp; Keep Engine Paused for Today
+        </button>
+      </div>
+
+    </div>
+  </div>
 
   <script>
     // State management for prototype
@@ -355,6 +727,25 @@
           { label: 'Filter: Applied Only', action: "alert('Filtered to applied jobs.')" },
           { label: 'Export Daily Digest', action: "alert('Markdown digest downloaded.')" }
         ]
+      },
+      radar: {
+        code: 'CAL-SCR-09',
+        title: 'Market Intelligence & Skill Gap Radar',
+        status: 'Analytical / Market Trends',
+        desc: 'Aggregates skill demand frequencies across 128+ parsed job postings. Identifies emerging high-demand stack trends, computes market wage index uplift (+22%), and highlights high-ROI skills missing from candidate profile.',
+        criteria: [
+          'Horizontal frequency distribution bar chart for trending skills (Kafka, Terraform, GraphQL, etc.).',
+          'Delta comparison tags highlighting matched vs unrepresented skills.',
+          '1-Tap "Add to Skill Matrix" action directly from market demand radar.',
+          'Calculated salary index uplift associated with target skills (+15-25%).',
+          'Export market digest in Markdown / JSON format for career roadmap planning.'
+        ],
+        actions: [
+          { label: 'Add Top Skill (Kafka Streams)', action: "addMarketSkill('Kafka Streams')" },
+          { label: 'Add Terraform to Matrix', action: "addMarketSkill('Terraform & IaC')" },
+          { label: 'Export Market Digest (MD)', action: "alert('Market Intelligence Digest exported: market_gap_report.md')" },
+          { label: 'Switch to Skill Matrix', action: "setScreen('skills')" }
+        ]
       }
     };
 
@@ -362,7 +753,7 @@
       currentScreen = screenId;
 
       // Update Nav Buttons
-      ['auth', 'vault', 'resume', 'skills', 'qa', 'mission', 'feed', 'history'].forEach(id => {
+      ['auth', 'vault', 'resume', 'skills', 'qa', 'mission', 'feed', 'history', 'radar'].forEach(id => {
         const btn = document.getElementById('nav-' + id);
         if (btn) {
           if (id === screenId) {
@@ -906,7 +1297,149 @@
             </div>
           </div>
         `;
+      } else if (screenId === 'radar') {
+        container.innerHTML = `
+          <div class="space-y-3 pt-2">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <div>
+                <h2 class="text-sm font-bold text-slate-100">Market Skill Radar</h2>
+                <p class="text-[10px] text-slate-400">128 active postings parsed today</p>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">Market FR-9</span>
+            </div>
+
+            <!-- Salary Uplift Card -->
+            <div class="p-3 rounded-xl bg-gradient-to-r from-blue-950/60 to-purple-950/60 border border-blue-500/30 flex items-center justify-between">
+              <div>
+                <span class="text-[10px] text-blue-300 font-medium uppercase tracking-wider">Salary Uplift Index</span>
+                <div class="text-base font-bold text-slate-100">+22% Avg Uplift</div>
+                <div class="text-[9px] text-slate-400">Targeting Kafka + Terraform in JD matches</div>
+              </div>
+              <div class="text-2xl">📈</div>
+            </div>
+
+            <!-- Skills Frequency Bar Chart -->
+            <div class="space-y-2">
+              <div class="text-[10px] font-bold uppercase text-slate-400 tracking-wider">High Demand Skills in Market</div>
+
+              <!-- Item 1: Kafka Streams -->
+              <div class="p-2.5 rounded-xl bg-slate-850/70 border border-slate-800 space-y-1.5">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-bold text-slate-100">Kafka Streams</span>
+                  <span class="font-mono text-emerald-400 font-bold">78% of JDs</span>
+                </div>
+                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div class="bg-blue-500 h-2 rounded-full" style="width: 78%"></div>
+                </div>
+                <div class="flex items-center justify-between text-[10px] pt-0.5">
+                  <span class="text-amber-400 font-medium">Adjacent (0.8x Recency)</span>
+                  <button onclick="addMarketSkill('Kafka Streams')" class="text-blue-400 hover:text-blue-300 font-bold underline">+ Add Core</button>
+                </div>
+              </div>
+
+              <!-- Item 2: Terraform & IaC -->
+              <div class="p-2.5 rounded-xl bg-slate-850/70 border border-slate-800 space-y-1.5">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-bold text-slate-100">Terraform &amp; IaC</span>
+                  <span class="font-mono text-emerald-400 font-bold">64% of JDs</span>
+                </div>
+                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div class="bg-blue-500 h-2 rounded-full" style="width: 64%"></div>
+                </div>
+                <div class="flex items-center justify-between text-[10px] pt-0.5">
+                  <span class="text-rose-400 font-medium">Missing from Profile</span>
+                  <button onclick="addMarketSkill('Terraform & IaC')" class="text-blue-400 hover:text-blue-300 font-bold underline">+ Add to Matrix</button>
+                </div>
+              </div>
+
+              <!-- Item 3: GraphQL & Apollo -->
+              <div class="p-2.5 rounded-xl bg-slate-850/70 border border-slate-800 space-y-1.5">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-bold text-slate-100">GraphQL / Apollo</span>
+                  <span class="font-mono text-blue-400 font-bold">52% of JDs</span>
+                </div>
+                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div class="bg-blue-500 h-2 rounded-full" style="width: 52%"></div>
+                </div>
+                <div class="flex items-center justify-between text-[10px] pt-0.5">
+                  <span class="text-rose-400 font-medium">Missing from Profile</span>
+                  <button onclick="addMarketSkill('GraphQL')" class="text-blue-400 hover:text-blue-300 font-bold underline">+ Add to Matrix</button>
+                </div>
+              </div>
+
+              <!-- Item 4: Go (Golang) -->
+              <div class="p-2.5 rounded-xl bg-slate-850/70 border border-emerald-500/30 space-y-1.5">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-bold text-slate-100">Go (Golang)</span>
+                  <span class="font-mono text-emerald-400 font-bold">95% of JDs</span>
+                </div>
+                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div class="bg-emerald-500 h-2 rounded-full" style="width: 95%"></div>
+                </div>
+                <div class="flex items-center justify-between text-[10px] pt-0.5">
+                  <span class="text-emerald-400 font-medium flex items-center gap-1">✓ Matched (6y, Expert)</span>
+                  <span class="text-slate-500 font-mono">1.0x Core</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Export Button -->
+            <button onclick="alert('Market digest exported to market_intelligence_report.md')" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold transition mt-2">
+              📄 Export Market Digest (Markdown)
+            </button>
+          </div>
+        `;
       }
+    }
+
+    function setViewport(vp) {
+      const mobBtn = document.getElementById('vp-btn-mobile');
+      const deskBtn = document.getElementById('vp-btn-desktop');
+      const mobContainer = document.getElementById('mobile-view-container');
+      const deskContainer = document.getElementById('desktop-view-container');
+      const badge = document.getElementById('current-viewport-badge');
+      const switcherBar = document.getElementById('screen-switcher-bar');
+
+      if (vp === 'desktop') {
+        mobContainer.classList.add('hidden');
+        deskContainer.classList.remove('hidden');
+        mobBtn.className = 'px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 font-medium flex items-center gap-1.5 transition';
+        deskBtn.className = 'px-3 py-1.5 rounded-lg bg-blue-600 text-white font-medium flex items-center gap-1.5 shadow transition';
+        badge.innerText = 'Desktop (1024px+)';
+        badge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20 font-mono';
+        switcherBar.classList.add('opacity-40');
+      } else {
+        deskContainer.classList.add('hidden');
+        mobContainer.classList.remove('hidden');
+        deskBtn.className = 'px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 font-medium flex items-center gap-1.5 transition';
+        mobBtn.className = 'px-3 py-1.5 rounded-lg bg-blue-600 text-white font-medium flex items-center gap-1.5 shadow transition';
+        badge.innerText = 'Mobile (375px)';
+        badge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 font-mono';
+        switcherBar.classList.remove('opacity-40');
+      }
+    }
+
+    function openCaptchaModal() {
+      document.getElementById('captcha-modal').classList.remove('hidden');
+    }
+
+    function closeCaptchaModal() {
+      document.getElementById('captcha-modal').classList.add('hidden');
+    }
+
+    function solveCaptchaManually() {
+      alert('🎉 Anti-Bot CAPTCHA Challenge Solved!\n\nEngine acknowledged cookie retention.\nResuming autonomous scan on Naukri.com...');
+      closeCaptchaModal();
+    }
+
+    function addMarketSkill(name) {
+      if (!skillsState.some(s => s.name.toLowerCase() === name.toLowerCase())) {
+        skillsState.push({ name: name, exp: 3.0, year: 2026, level: 'intermediate', core: true, mult: '1.0x', color: 'emerald' });
+        alert(`Skill "${name}" successfully added to your Dynamic Skill Matrix!`);
+      } else {
+        alert(`Skill "${name}" already present in Matrix.`);
+      }
+      setScreen('skills');
     }
 
     function adjustExp(idx, delta) {
